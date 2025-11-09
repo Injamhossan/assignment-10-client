@@ -10,9 +10,6 @@ export const useTheme = () => {
   return context;
 };
 
-
-
-// Initialize theme immediately before React renders
 const getInitialTheme = () => {
   if (typeof window === 'undefined') return 'light';
   
@@ -22,7 +19,6 @@ const getInitialTheme = () => {
     return savedTheme;
   }
   
-  // Check system preference
   if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
     return 'dark';
   }
@@ -30,7 +26,6 @@ const getInitialTheme = () => {
   return 'light';
 };
 
-// Apply theme to document immediately
 const applyTheme = (theme) => {
   const root = document.documentElement;
   if (theme === 'dark') {
@@ -42,7 +37,7 @@ const applyTheme = (theme) => {
   }
 };
 
-// Initialize theme on load
+
 const initialTheme = getInitialTheme();
 applyTheme(initialTheme);
 

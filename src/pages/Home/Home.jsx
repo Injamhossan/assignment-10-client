@@ -1,14 +1,34 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import HeroCarousel from '../../components/HeroCarousel/HeroCarosel';
+import HowItWorks from '../../components/HowItWorks/HowItWorks';
+import PageLoader from '../../components/Spinner/PageLoader';
 
 const Home = () => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate page loading
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return <PageLoader />;
+  }
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors">
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-8 lg:py-12">
         <HeroCarousel />
       </section>
+
+      {/* How It Works Section */}
+      <HowItWorks />
 
       {/* Features Section */}
       <section className="container mx-auto px-4 py-12 lg:py-16">

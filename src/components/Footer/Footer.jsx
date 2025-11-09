@@ -7,11 +7,11 @@ const Footer = () => {
     <div className="mx-auto max-w-[1600px]">
       <footer className="footer sm:footer-horizontal text-base-content p-10">
         <aside>
-          <img src={FooterLogo} alt="" />
+          <img src={FooterLogo} alt="" className="h-[60px] w-auto mx-[-25px]" />
           <p>
-            ACME Industries Ltd.
+            Study Mate
             <br />
-            Providing reliable tech since 1992
+            Find Your Perfect Study Partner
           </p>
         </aside>
         <nav>
