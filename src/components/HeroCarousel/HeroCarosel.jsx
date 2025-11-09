@@ -7,22 +7,26 @@ const slides = [
     gradient: "bg-gradient-to-r from-[#300A91] via-[#3C0AA4] to-[#CAA1FF]",
     title: "Find Your Study Buddy Anytime, Anywhere",
     subtitle: "Connect with motivated students who share your academic goals",
+    image: "https://i.ibb.co/0yJ5fbCp/image1.jpg",
   },
   {
     gradient: "bg-gradient-to-r from-[#3C0AA4] via-[#CAA1FF] to-[#300A91]",
     title: "Learn Together, Achieve Together",
     subtitle: "Join a community of passionate learners and excel in your studies",
+    image: "https://i.ibb.co/ccFsgvJv/image2.jpg",
   },
   {
     gradient: "bg-gradient-to-r from-[#CAA1FF] via-[#300A91] to-[#3C0AA4]",
     title: "Success Starts with Collaboration",
     subtitle: "Discover study partners who inspire and support your journey",
+    image: "https://i.ibb.co/TDYDmCpv/image3.jpg",
   },
 ];
 
 export const HeroCarousel = () => {
   const [current, setCurrent] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [imageErrors, setImageErrors] = useState({});
   const mounted = useRef(true);
   const carouselRef = useRef(null);
   const touchStartX = useRef(0);
@@ -97,25 +101,39 @@ export const HeroCarousel = () => {
               aria-roledescription="slide"
               aria-label={`${i + 1} of ${slides.length}`}
             >
-              {/* Background gradient */}
-              <div className={`absolute inset-0 w-full h-full ${slide.gradient}`} />
+              {/* Background Image or Gradient Fallback */}
+              {imageErrors[i] ? (
+                // Show gradient if image failed to load
+                <div className={`absolute inset-0 w-full h-full ${slide.gradient}`} />
+              ) : (
+                // Show image
+                <img
+                  src={slide.image}
+                  alt={slide.title}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  onError={() => {
+                    setImageErrors((prev) => ({ ...prev, [i]: true }));
+                  }}
+                  loading={isActive ? "eager" : "lazy"}
+                />
+              )}
 
-              {/* overlay for better text readability */}
-              <div className="absolute inset-0 bg-black/20" />
+              {/* Dark overlay for better text readability */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/30 z-10" />
 
               {/* content */}
               <div className="relative z-20 flex h-full items-center justify-center px-6">
                 <div className="text-center max-w-3xl space-y-6">
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white drop-shadow-md">
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-white drop-shadow-lg">
                     {slide.title}
                   </h2>
-                  <p className="text-sm sm:text-base md:text-lg text-white/90">
+                  <p className="text-sm sm:text-base md:text-lg text-white/95 drop-shadow-md">
                     {slide.subtitle}
                   </p>
                   <div>
                     <Link 
                       to="/findpartners"
-                      className="inline-block px-8 py-3 bg-white text-[#300A91] font-semibold rounded-full hover:bg-gray-100 transition-colors shadow-lg"
+                      className="inline-block px-8 py-3 bg-white text-[#300A91] font-semibold rounded-full hover:bg-gray-100 dark:hover:bg-gray-200 transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 transition-transform"
                     >
                       Get Started
                     </Link>
@@ -127,31 +145,31 @@ export const HeroCarousel = () => {
         })}
       </div>
 
-      {/* Prev / Next (hide on very small screens if desired) */}
+      {/* Prev / Next buttons - Always visible on desktop */}
       <button
         onClick={prev}
         aria-label="Previous slide"
-        className="hidden sm:flex absolute left-3 top-1/2 -translate-y-1/2 items-center justify-center p-2 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur transition-shadow shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#300A91]"
+        className="hidden sm:flex absolute left-3 top-1/2 -translate-y-1/2 z-50 items-center justify-center w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-sm transition-all shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/50"
       >
         <ChevronLeft className="w-6 h-6 text-white" />
       </button>
       <button
         onClick={next}
         aria-label="Next slide"
-        className="hidden sm:flex absolute right-3 top-1/2 -translate-y-1/2 items-center justify-center p-2 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur transition-shadow shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#300A91]"
+        className="hidden sm:flex absolute right-3 top-1/2 -translate-y-1/2 z-50 items-center justify-center w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-sm transition-all shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/50"
       >
         <ChevronRight className="w-6 h-6 text-white" />
       </button>
 
       {/* Indicators */}
-      <div className="absolute left-1/2 -translate-x-1/2 bottom-4 flex items-center gap-2">
+      <div className="absolute left-1/2 -translate-x-1/2 bottom-4 z-50 flex items-center gap-2">
         {slides.map((_, idx) => (
           <button
             key={idx}
             onClick={() => setCurrent(idx)}
             aria-label={`Go to slide ${idx + 1}`}
-            className={`h-2 sm:h-2.5 transition-all duration-300 rounded-full ${
-              idx === current ? "w-8 bg-white" : "w-2 bg-white/40"
+            className={`h-2 sm:h-2.5 transition-all duration-300 rounded-full cursor-pointer ${
+              idx === current ? "w-8 bg-white shadow-lg" : "w-2 bg-white/60 hover:bg-white/80"
             }`}
             aria-current={idx === current}
           />
@@ -159,18 +177,18 @@ export const HeroCarousel = () => {
       </div>
 
       {/* Mobile mini nav: show small left/right buttons overlayed when on mobile */}
-      <div className="sm:hidden absolute inset-x-0 top-1/2 -translate-y-1/2 flex items-center justify-between px-4">
+      <div className="sm:hidden absolute inset-x-0 top-1/2 -translate-y-1/2 z-50 flex items-center justify-between px-4">
         <button
           onClick={prev}
           aria-label="Previous slide"
-          className="p-2 rounded-full bg-black/40 hover:bg-black/60 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#300A91]"
+          className="p-2 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-sm transition-all shadow-lg focus:outline-none focus:ring-2 focus:ring-white/50"
         >
           <ChevronLeft className="w-5 h-5 text-white" />
         </button>
         <button
           onClick={next}
           aria-label="Next slide"
-          className="p-2 rounded-full bg-black/40 hover:bg-black/60 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#300A91]"
+          className="p-2 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-sm transition-all shadow-lg focus:outline-none focus:ring-2 focus:ring-white/50"
         >
           <ChevronRight className="w-5 h-5 text-white" />
         </button>

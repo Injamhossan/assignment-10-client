@@ -28,7 +28,7 @@ const Navbar = () => {
 
   return (
     <header className="bg-white dark:bg-gray-900 shadow-sm py-3 transition-colors">
-      <nav className="mx-auto max-w-[1700px] px-4 lg:px-8">
+      <nav className="mx-auto max-w-[1620px] px-4 lg:px-8">
         <div className="flex items-center justify-between h-14">
           {/* Left: Logo */}
           <div className="flex items-center gap-3">
