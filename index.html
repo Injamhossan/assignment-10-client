@@ -2,11 +2,25 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/src/assets/Fav.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>assignment-10-client</title>
+    <title>StudyMate — Find Your Perfect Study Partner</title>
+    <script>
+      // Initialize theme immediately to prevent flash
+      (function() {
+        const theme = localStorage.getItem('theme') || 
+          (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+          document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
   </head>
-  <body>
+  <body class="poppins-regular">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
