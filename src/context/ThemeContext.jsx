@@ -1,14 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-
-const ThemeContext = createContext();
-
-export const useTheme = () => {
-  const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider');
-  }
-  return context;
-};
+import { useState, useEffect } from 'react';
+import { ThemeContext } from './themeContext';
 
 const getInitialTheme = () => {
   if (typeof window === 'undefined') return 'light';
@@ -27,6 +18,7 @@ const getInitialTheme = () => {
 };
 
 const applyTheme = (theme) => {
+  if (typeof document === 'undefined') return;
   const root = document.documentElement;
   if (theme === 'dark') {
     root.classList.add('dark');
