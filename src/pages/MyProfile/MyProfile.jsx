@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { User, Mail, Save, Edit2, X } from 'lucide-react';
 import PageLoader from '../../components/Spinner/PageLoader';
 import { useAuth } from '../../context/AuthContext';
-import { getUser } from '../../services/api';
+import { getMyProfile } from '../../services/api'; //
 
 const MyProfile = () => {
   const [loading, setLoading] = useState(true);
@@ -42,7 +42,7 @@ const MyProfile = () => {
 
         // Try to get additional data from MongoDB
         try {
-          const dbData = await getUser(user.uid);
+         const dbData = await getMyProfile();
           setDbUserData(dbData);
           setFormData({
             name: dbData.name || firebaseData.name,
@@ -55,7 +55,6 @@ const MyProfile = () => {
             education: dbData.education || '',
           });
         } catch (error) {
-          // If user doesn't exist in DB yet, use Firebase data
           setFormData({
             name: firebaseData.name,
             email: firebaseData.email,

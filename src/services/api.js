@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 
 const API_BASE_URL = 'http://localhost:5000/api';
 
-// Create axios instance
+// Axios instance toiri kora
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -11,108 +11,129 @@ const api = axios.create({
   }
 });
 
-// Register user in MongoDB
+// Request pathanor age token set kora (jodi thake)
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token'); // Assuming you store JWT token in localStorage
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// --- Auth Routes (Server er shathe match kora) ---
+
+/**
+ * User ke MongoDB te register kore.
+ * Server er niyom onujayi, `userData` object e obosshoi
+ * name, email, password, ebong firebaseToken thakte hobe.
+ */
 export const registerUser = async (userData) => {
   try {
-    const response = await api.post('/users/register', userData);
-    return response.data;
+    // '/users/register' NOY, '/auth/register' HOBE
+    const response = await api.post('/auth/register', userData);
+    toast.success('Registration Successful!');
+    return response.data; // { token, user } return korbe
   } catch (error) {
-    if (error.response?.status === 409) {
-      // User already exists, which is fine
-      return { message: 'User already exists' };
-    }
+    console.error('Error registering user:', error.response?.data?.msg || error.message);
+    toast.error(error.response?.data?.msg || 'Registration failed');
     throw error;
   }
 };
 
-// Update user in MongoDB
-export const updateUser = async (uid, userData) => {
+/**
+ * User ke MongoDB theke login koray.
+ * Server er niyom onujayi, `loginData` object e obosshoi
+ * email, password, ebong firebaseToken thakte hobe.
+ */
+export const loginUser = async (loginData) => {
   try {
-    const response = await api.put(`/users/${uid}`, userData);
-    // Handle different response formats
-    if (response.data.data) {
-      return response.data.data;
-    }
-    return response.data;
+    const response = await api.post('/auth/login', loginData);
+    toast.success('Login Successful!');
+    return response.data; // { token, user } return korbe
   } catch (error) {
-    // If user doesn't exist, try to create/register them
-    if (error.response?.status === 404) {
-      try {
-        const registerResponse = await registerUser({ uid, ...userData });
-        return registerResponse;
-      } catch (registerError) {
-        console.error('Error creating user during update:', registerError);
-        throw registerError;
-      }
-    }
-    console.error('Error updating user:', error);
+    console.error('Error logging in:', error.response?.data?.msg || error.message);
+    toast.error(error.response?.data?.msg || 'Login failed');
     throw error;
   }
 };
 
-// Get user data from MongoDB
-export const getUser = async (uid) => {
+/**
+ * Logged in user er profile data token er maddhome ber kore.
+ * Server e '/api/auth/me' route ache, '/api/users/:uid' nei.
+ */
+export const getMyProfile = async () => {
   try {
-    const response = await api.get(`/users/${uid}`);
-    // Handle different response formats
-    if (response.data.data) {
-      return response.data.data;
-    }
-    return response.data;
+    const response = await api.get('/auth/me');
+    return response.data.user; // { user: {...} } return kore
   } catch (error) {
-    if (error.response?.status === 404) {
-      // User not found in database
-      return null;
-    }
-    console.error('Error fetching user:', error);
+    console.error('Error fetching profile:', error.response?.data?.msg || error.message);
+    // Token expire hole ba kono problem hole error debe
     throw error;
   }
 };
 
-// Get all partners
+// --- Partners Routes (Server er shathe match kora) ---
+
+/**
+ * Shob partners der list ber kore
+ */
 export const getPartners = async () => {
   try {
     const response = await api.get('/partners');
-    // Handle different response formats
-    if (response.data && response.data.data && Array.isArray(response.data.data)) {
+    // Server er response structure onujayi data access
+    if (response.data && Array.isArray(response.data.data)) {
       return response.data.data;
     }
-    if (Array.isArray(response.data)) {
-      return response.data;
-    }
-    // If response.data is an object with a partners array
-    if (response.data && Array.isArray(response.data.partners)) {
-      return response.data.partners;
-    }
-    // Return empty array if no valid data structure
-    return [];
+    return []; // No data found
   } catch (error) {
-    console.error('Error fetching partners:', error);
-    // If server is not running or network error, return empty array
-    if (!error.response || error.response?.status === 404) {
-      console.warn('Partners endpoint not available or no partners found');
-      return [];
-    }
-    // Only show toast for actual errors (not 404)
-    if (error.response?.status !== 404) {
-      toast.error('Failed to fetch partners. Please try again later.');
-    }
+    console.error('Error fetching partners:', error.response?.data?.msg || error.message);
+    toast.error(error.response?.data?.msg || 'Failed to fetch partners');
     return [];
   }
 };
 
-// Create partner profile
+/**
+ * Notun partner profile toiri kore
+ */
 export const createPartner = async (partnerData) => {
   try {
     const response = await api.post('/partners', partnerData);
     toast.success('Partner profile created successfully!');
-    return response.data;
+    return response.data; // { success: true, data: {...} } return korbe
   } catch (error) {
-    console.error('Error creating partner:', error);
-    toast.error('Failed to create partner profile');
+    console.error('Error creating partner:', error.response?.data?.msg || error.message);
+    toast.error(error.response?.data?.msg || 'Failed to create partner profile');
+    throw error;
+  }
+};
+
+export const updateUserProfile = async (userData) => {
+  try {
+    // userData object-e name, password, bio, etc. thakte pare
+    const response = await api.put('/auth/me', userData);
+    
+    toast.success(response.data.msg || 'Profile updated successfully!');
+    return response.data.user; // updated user object return korbe
+  } catch (error) {
+    console.error('Error updating profile:', error.response?.data?.msg || error.message);
+    toast.error(error.response?.data?.msg || 'Profile update failed');
+    throw error;
+  }
+};
+
+
+
+export const getPartnerById = async (id) => {
+  try {
+    const response = await api.get(`/partners/${id}`);
+    if (response.data && response.data.data) {
+      return response.data.data; // Server 'data' object-er moddhe partner object-ti pathay
+    }
+  } catch (error) {
+    console.error('Error fetching partner by ID:', error.response?.data?.msg || error.message);
+    toast.error(error.response?.data?.msg || 'Failed to fetch partner');
     throw error;
   }
 };
 
 export default api;
-
