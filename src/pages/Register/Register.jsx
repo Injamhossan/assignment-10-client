@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, User } from 'lucide-react';
 import NavLogo from '../../assets/StudyMate.png';
 import PageLoader from '../../components/Spinner/PageLoader';
+import { useAuth } from '../../context/AuthContext';
 
 const Register = () => {
   const [loading, setLoading] = useState(true);
+  const [formLoading, setFormLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -15,6 +17,8 @@ const Register = () => {
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { register, googleSignIn, user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -23,6 +27,12 @@ const Register = () => {
 
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   if (loading) {
     return <PageLoader />;
@@ -43,7 +53,7 @@ const Register = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
 
@@ -72,19 +82,34 @@ const Register = () => {
     }
 
     // Handle registration logic here
-    console.log('Register:', formData);
-    alert('Account created successfully! Welcome to StudyMate');
-    setFormData({
-      name: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-    });
-    setErrors({});
+    setFormLoading(true);
+    try {
+      await register(formData.email, formData.password, formData.name);
+      setFormData({
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+      });
+      setErrors({});
+      navigate('/');
+    } catch (error) {
+      console.error('Registration error:', error);
+    } finally {
+      setFormLoading(false);
+    }
   };
 
-  const handleGoogleRegister = () => {
-    alert('Google registration will be implemented soon!');
+  const handleGoogleRegister = async () => {
+    setFormLoading(true);
+    try {
+      await googleSignIn();
+      navigate('/');
+    } catch (error) {
+      console.error('Google registration error:', error);
+    } finally {
+      setFormLoading(false);
+    }
   };
 
   return (
@@ -242,9 +267,10 @@ const Register = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full bg-[#300A91] dark:bg-purple-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#3C0AA4] dark:hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500 focus:ring-offset-2 transition-colors shadow-lg hover:shadow-xl mt-6"
+              disabled={formLoading}
+              className="w-full bg-[#300A91] dark:bg-purple-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#3C0AA4] dark:hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500 focus:ring-offset-2 transition-colors shadow-lg hover:shadow-xl mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Create Account
+              {formLoading ? 'Creating Account...' : 'Create Account'}
             </button>
           </form>
 
@@ -265,7 +291,8 @@ const Register = () => {
             <button
               type="button"
               onClick={handleGoogleRegister}
-              className="mt-4 w-full flex items-center justify-center gap-3 py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500 focus:ring-offset-2 transition-colors"
+              disabled={formLoading}
+              className="mt-4 w-full flex items-center justify-center gap-3 py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path

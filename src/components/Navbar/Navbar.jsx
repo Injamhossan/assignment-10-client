@@ -1,13 +1,26 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
-import { Sun, Moon } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Sun, Moon, LogOut, User } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
+import { useAuth } from "../../context/AuthContext";
 import NavLogo from "../../assets/StudyMate.png";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
   const { theme, toggleTheme } = useTheme();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+      setOpen(false);
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
 
   useEffect(() => {
@@ -23,7 +36,8 @@ const Navbar = () => {
     { to: "/", label: "Home" },
     { to: "/findpartners", label: "Find Partners" },
     { to: "/createprofile", label: "Create Profile" },
-    { to: "/myconnection", label: "My Connection" }, 
+    { to: "/myconnection", label: "My Connection" },
+    ...(user ? [{ to: "/myprofile", label: "My Profile" }] : []),
   ];
 
   return (
@@ -68,12 +82,36 @@ const Navbar = () => {
 
             {/* Desktop auth buttons */}
             <div className="hidden lg:flex lg:items-center lg:gap-3">
-              <Link to="/login" className="btn bg-[#300A91] dark:bg-purple-600 rounded-[50px] px-4 py-1 text-white hover:bg-[#3C0AA4] dark:hover:bg-purple-700 transition-colors">
-                Log in
-              </Link>
-              <Link to="/register" className="btn bg-[#300A91] dark:bg-purple-600 rounded-[50px] px-4 py-1 text-white hover:bg-[#3C0AA4] dark:hover:bg-purple-700 transition-colors">
-                Registration
-              </Link>
+              {user ? (
+                <>
+                  <Link to="/myprofile" className="flex items-center gap-2 px-4 py-2 text-[#300A91] dark:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                    {user.photoURL ? (
+                      <img src={user.photoURL} alt={user.displayName || 'User'} className="w-8 h-8 rounded-full" />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-[#300A91] dark:bg-purple-600 flex items-center justify-center">
+                        <User className="w-4 h-4 text-white" />
+                      </div>
+                    )}
+                    <span className="font-semibold">{user.displayName || 'Profile'}</span>
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="btn bg-red-600 dark:bg-red-700 rounded-[50px] px-4 py-1 text-white hover:bg-red-700 dark:hover:bg-red-800 transition-colors flex items-center gap-2"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" className="btn bg-[#300A91] dark:bg-purple-600 rounded-[50px] px-4 py-1 text-white hover:bg-[#3C0AA4] dark:hover:bg-purple-700 transition-colors">
+                    Log in
+                  </Link>
+                  <Link to="/register" className="btn bg-[#300A91] dark:bg-purple-600 rounded-[50px] px-4 py-1 text-white hover:bg-[#3C0AA4] dark:hover:bg-purple-700 transition-colors">
+                    Registration
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Mobile menu button (visible on small screens) */}
@@ -109,24 +147,56 @@ const Navbar = () => {
                       </li>
                     ))}
 
-                    <li>
-                      <Link
-                        to="/login"
-                        className="block px-4 py-3 text-[#300A91] dark:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                        onClick={() => setOpen(false)}
-                      >
-                        Log in
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        to="/register"
-                        className="block px-4 py-3 text-[#300A91] dark:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                        onClick={() => setOpen(false)}
-                      >
-                        Registration
-                      </Link>
-                    </li>
+                    {user ? (
+                      <>
+                        <li>
+                          <Link
+                            to="/myprofile"
+                            className="block px-4 py-3 text-[#300A91] dark:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
+                            onClick={() => setOpen(false)}
+                          >
+                            {user.photoURL ? (
+                              <img src={user.photoURL} alt={user.displayName || 'User'} className="w-6 h-6 rounded-full" />
+                            ) : (
+                              <User className="w-5 h-5" />
+                            )}
+                            My Profile
+                          </Link>
+                        </li>
+                        <li>
+                          <button
+                            onClick={() => {
+                              handleLogout();
+                            }}
+                            className="w-full text-left block px-4 py-3 text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
+                          >
+                            <LogOut className="w-5 h-5" />
+                            Logout
+                          </button>
+                        </li>
+                      </>
+                    ) : (
+                      <>
+                        <li>
+                          <Link
+                            to="/login"
+                            className="block px-4 py-3 text-[#300A91] dark:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                            onClick={() => setOpen(false)}
+                          >
+                            Log in
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            to="/register"
+                            className="block px-4 py-3 text-[#300A91] dark:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                            onClick={() => setOpen(false)}
+                          >
+                            Registration
+                          </Link>
+                        </li>
+                      </>
+                    )}
                     <li>
                       <button
                         onClick={() => {

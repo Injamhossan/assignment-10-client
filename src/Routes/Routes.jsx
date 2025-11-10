@@ -5,6 +5,7 @@ import Home from '../pages/Home/Home';
 import FindPartners from '../pages/FindPartners/FindPartners';
 import CreatePartner from '../pages/CreatePartner/CreatePartner';
 import MyConnections from '../pages/MyConnections/MyConnections';
+import MyProfile from '../pages/MyProfile/MyProfile';
 import Login from '../pages/Login/Login';
 import Register from '../pages/Register/Register';
 import NotFound from '../pages/NotFound/NotFound';
@@ -29,6 +30,10 @@ export const router = createBrowserRouter([
       {
         path: "/myconnection",
         element: <MyConnections/>
+      },
+      {
+        path: "/myprofile",
+        element: <MyProfile/>
       },
       {
         path: "/login",
