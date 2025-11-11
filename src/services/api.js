@@ -107,6 +107,23 @@ export const createPartner = async (partnerData) => {
   }
 };
 
+// --- NOTUN FUNCTION (START) ---
+/**
+ * Existing partner profile update kore
+ */
+export const updatePartnerProfile = async (partnerId, partnerData) => {
+  try {
+    const response = await api.put(`/partners/${partnerId}`, partnerData);
+    toast.success('Partner profile updated successfully!');
+    return response.data; // { success: true, data: {...} } return korbe
+  } catch (error) {
+    console.error('Error updating partner:', error.response?.data?.msg || error.message);
+    toast.error(error.response?.data?.msg || 'Failed to update partner profile');
+    throw error;
+  }
+};
+// --- NOTUN FUNCTION (END) ---
+
 export const updateUserProfile = async (userData) => {
   try {
     // userData object-e name, password, bio, etc. thakte pare

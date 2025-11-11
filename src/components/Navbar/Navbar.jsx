@@ -9,7 +9,7 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
   const { theme, toggleTheme } = useTheme();
-  const { user, logout } = useAuth();
+  const { user, logout, partnerData, loading } = useAuth(); // --- partnerData ebong loading nilam ---
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -32,13 +32,16 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", onDocClick);
   }, [open]);
 
+  // --- LINKS LOGIC PORIBORTON (START) ---
   const links = [
     { to: "/", label: "Home" },
     { to: "/findpartners", label: "Find Partners" },
-    { to: "/createprofile", label: "Create Profile" },
+    // Conditionally show Create or Edit Profile
+    !loading && user && partnerData && { to: "/createprofile", label: "Edit Profile" },
+    !loading && user && !partnerData && { to: "/createprofile", label: "Create Profile" },
     { to: "/myconnection", label: "My Connection" },
-    // ...(user ? [{ to: "/myprofile", label: "My Profile" }] : []),
-  ];
+  ].filter(Boolean); // .filter(Boolean) false entrygulo remove kore dey
+  // --- LINKS LOGIC PORIBORTON (END) ---
 
   return (
     <header className="bg-white dark:bg-gray-900 shadow-sm py-3 transition-colors">

@@ -16,16 +16,23 @@ const getInitials = (name) => {
 const ConnectionCard = ({ partner, status = 'pending', sentDate = 'N/A' }) => {
   const { cancelRequest } = useAuth(); // Auth context theke cancel request function nilam
 
-  const handleCancel = () => {
+  // --- PORIBORTON (START) ---
+  // handleCancel function-ti ke 'async' kora hoyeche
+  const handleCancel = async () => {
     if (window.confirm(`Are you sure you want to cancel your request to ${partner.name}?`)) {
       try {
-        cancelRequest(partner._id);
+        // 'await' add kora hoyeche jate API call shesh howar porjonto opekkha kore
+        await cancelRequest(partner._id);
+        // Success toast ekhon shudhu API call successful holei dekhabe
         toast.success('Request cancelled');
       } catch (error) {
+        // Error-ti ekhon thikbhabe catch hobe
         toast.error('Failed to cancel request');
+        console.error('Cancel request error:', error);
       }
     }
   };
+  // --- PORIBORTON (END) ---
 
   const isAccepted = status.toLowerCase() === 'accepted';
 

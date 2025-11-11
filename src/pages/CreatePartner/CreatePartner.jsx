@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { createPartner } from '../../services/api';
+import { createPartner, updatePartnerProfile } from '../../services/api'; // <-- updatePartnerProfile import
 import PageLoader from '../../components/Spinner/PageLoader';
 import { toast } from 'react-toastify';
 import { User, Mail, Book, BarChart, Wifi, MapPin, Clock, Info, Image as ImageIcon } from 'lucide-react';
 
 const CreatePartner = () => {
-  const { user, loading: authLoading } = useAuth();
+  // --- PORIBORTON: partnerData ebong checkAndSetPartnerData nilam ---
+  const { user, loading: authLoading, partnerData, checkAndSetPartnerData } = useAuth();
   const navigate = useNavigate();
   const [formLoading, setFormLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -22,9 +23,33 @@ const CreatePartner = () => {
     about: '', // server 'about' expect kore
   });
 
-  // Pre-fill form with authenticated user's data
+  // --- PORIBORTON: Pre-fill logic update kora holo ---
   useEffect(() => {
-    if (!authLoading && user) {
+    if (authLoading) return; // Auth load na howa porjonto opekkha
+    
+    // Jodi user login na thake, login page e pathiye deya
+    if (!user) {
+      navigate('/login');
+      toast.info('Please log in to create or edit a profile.');
+      return;
+    }
+
+    // Jodi user-er 'partnerData' (partner profile) thake
+    if (partnerData) {
+      setFormData({
+        name: partnerData.name || '',
+        email: user.email, // email shobshomoy auth user theke
+        image: partnerData.image || '',
+        subject: partnerData.subject || '',
+        level: partnerData.level || '',
+        studyMode: partnerData.activeStatus || '', // server 'activeStatus' pathay
+        location: partnerData.location || '',
+        availability: partnerData.availability || '',
+        about: partnerData.about || '',
+      });
+    } 
+    // Jodi partner profile na thake, kintu user login kora
+    else if (user) {
       setFormData(prev => ({
         ...prev,
         name: user.displayName || '',
@@ -32,27 +57,29 @@ const CreatePartner = () => {
         image: user.photoURL || '',
       }));
     }
-  }, [user, authLoading]);
+  }, [user, partnerData, authLoading, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  // --- PORIBORTON: handleSubmit logic update kora holo ---
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Check for required fields
-    const { name, subject, level, studyMode, location, availability } = formData;
-    if (!name || !subject || !level || !studyMode || !location || !availability) {
+    const { name, subject, level, studyMode, location, availability, email } = formData;
+    if (!name || !subject || !level || !studyMode || !location || !availability || !email) {
       toast.error('Please fill in all required fields.');
       return;
     }
     
     setFormLoading(true);
     try {
-      // Prepare data for the API (maps form fields to API fields)
-      const partnerData = {
+      // API-te pathanor jonno data toiri
+      const partnerDataForApi = {
+        email: formData.email, // <-- Email pathano hocche
         name: formData.name,
         image: formData.image,
         subject: formData.subject,
@@ -61,16 +88,28 @@ const CreatePartner = () => {
         location: formData.location,
         availability: formData.availability,
         about: formData.about,
-        rating: (Math.random() * (5 - 3.5) + 3.5).toFixed(1), // Assign a random initial rating (3.5-5.0)
+        rating: partnerData?.rating || (Math.random() * (5 - 3.5) + 3.5).toFixed(1), // Puran rating thakle shetai, noyto notun
       };
 
-      await createPartner(partnerData);
-      toast.success('Partner profile created successfully!');
+      if (partnerData) {
+        // --- UPDATE LOGIC ---
+        // Jodi partnerData thake, tahole update korbo
+        await updatePartnerProfile(partnerData._id, partnerDataForApi);
+      } else {
+        // --- CREATE LOGIC ---
+        // Jodi partnerData na thake, tahole create korbo
+        await createPartner(partnerDataForApi);
+      }
+
+      // Update korar por AuthContext-er partner data refresh kora
+      await checkAndSetPartnerData(user.email);
+
+      toast.success(partnerData ? 'Profile updated successfully!' : 'Profile created successfully!');
       navigate('/findpartners'); // Redirect to partners page after success
 
     } catch (error) {
-      toast.error('Failed to create profile. Please try again.');
-      console.error('Error creating partner profile:', error);
+      toast.error(partnerData ? 'Failed to update profile' : 'Failed to create profile');
+      console.error('Error in handleSubmit:', error);
     } finally {
       setFormLoading(false);
     }
@@ -80,23 +119,16 @@ const CreatePartner = () => {
     return <PageLoader />;
   }
 
-  // If user is not logged in, redirect to login
-  if (!user) {
-    navigate('/login');
-    toast.info('Please log in to create a profile.');
-    return null;
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="text-center mb-10">
           <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
-            Create Your Profile
+            {partnerData ? 'Update Your Profile' : 'Create Your Profile'}
           </h1>
           <p className="text-gray-600 dark:text-gray-300">
-            Share your details to connect with the right study partners
+            {partnerData ? 'Update your details to connect with partners' : 'Share your details to connect with partners'}
           </p>
         </div>
 
@@ -294,7 +326,7 @@ const CreatePartner = () => {
               disabled={formLoading}
               className="w-full bg-cyan-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {formLoading ? 'Creating Profile...' : 'Create Profile'}
+              {formLoading ? (partnerData ? 'Updating Profile...' : 'Creating Profile...') : (partnerData ? 'Update Profile' : 'Create Profile')}
             </button>
           </form>
         </div>
