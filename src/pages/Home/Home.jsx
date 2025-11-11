@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import HeroCarousel from '../../components/HeroCarousel/HeroCarosel';
 import HowItWorks from '../../components/HowItWorks/HowItWorks';
 import PageLoader from '../../components/Spinner/PageLoader';
+import TopStudents from '../../components/TopStudent/TopStudents';
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
@@ -29,6 +30,9 @@ const Home = () => {
 
       {/* How It Works Section */}
       <HowItWorks />
+
+      {/* Top Students Section */}
+      <TopStudents />
 
       {/* Features Section */}
       <section className="container mx-auto px-4 py-12 lg:py-16">
