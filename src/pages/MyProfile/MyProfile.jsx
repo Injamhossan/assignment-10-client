@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Mail, Save, Edit2, X } from 'lucide-react';
+import { User, Mail, Save, Edit2, X, Trash2 } from 'lucide-react'; // <-- Trash2 Import
 import PageLoader from '../../components/Spinner/PageLoader';
 import { useAuth } from '../../context/AuthContext';
 import { getMyProfile } from '../../services/api'; //
@@ -9,7 +9,7 @@ const MyProfile = () => {
   const [loading, setLoading] = useState(true);
   const [formLoading, setFormLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const { user, userData, updateUserProfile, logout } = useAuth();
+  const { user, userData, updateUserProfile, logout, deleteAccount } = useAuth(); // <-- deleteAccount nilam
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -93,6 +93,25 @@ const MyProfile = () => {
     }
   };
 
+  const handleDelete = async () => {
+    // Popup confirmation
+    if (window.confirm('Are you sure you want to delete your account? This action is permanent and cannot be undone.')) {
+      setFormLoading(true);
+      try {
+        await deleteAccount();
+        // AuthContext-er onAuthStateChanged listener handle korbe, 
+        // kintu amra user-ke sorasori home-e pathiye debo.
+        navigate('/'); 
+      } catch (error) {
+        // Error toast AuthContext thekei dekhano hobe
+        console.error('Delete account failed (in component):', error);
+        setFormLoading(false);
+      }
+      // Success hole component unmount hobe, tai loading false korar dorkar nei
+    }
+  };
+
+
   const handleCancel = () => {
     // Reset form data
     if (dbUserData) {
@@ -169,27 +188,43 @@ const MyProfile = () => {
                   {formData.email}
                 </p>
               </div>
-              <div className="flex gap-2">
+              
+              {/* BUTTON GROUP UPDATE */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 {!isEditing ? (
-                  <button
-                    type="button"
-                    onClick={() => setIsEditing(true)}
-                    className="px-4 py-2 bg-[#300A91] dark:bg-purple-600 text-white rounded-lg hover:bg-[#3C0AA4] dark:hover:bg-purple-700 transition-colors flex items-center gap-2"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                    Edit Profile
-                  </button>
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setIsEditing(true)}
+                      disabled={formLoading}
+                      className="w-full sm:w-auto px-4 py-2 bg-[#300A91] dark:bg-purple-600 text-white rounded-lg hover:bg-[#3C0AA4] dark:hover:bg-purple-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                      Edit Profile
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleDelete}
+                      disabled={formLoading}
+                      className="w-full sm:w-auto px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Delete Account
+                    </button>
+                  </>
                 ) : (
                   <button
                     type="button"
                     onClick={handleCancel}
-                    className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors flex items-center gap-2"
+                    disabled={formLoading}
+                    className="w-full sm:w-auto px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                   >
                     <X className="w-4 h-4" />
                     Cancel
                   </button>
                 )}
               </div>
+
             </div>
 
             {/* Editable Fields */}
@@ -365,7 +400,3 @@ const MyProfile = () => {
 };
 
 export default MyProfile;
-
-
-
-

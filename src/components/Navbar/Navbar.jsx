@@ -37,7 +37,7 @@ const Navbar = () => {
     { to: "/findpartners", label: "Find Partners" },
     { to: "/createprofile", label: "Create Profile" },
     { to: "/myconnection", label: "My Connection" },
-    ...(user ? [{ to: "/myprofile", label: "My Profile" }] : []),
+    // ...(user ? [{ to: "/myprofile", label: "My Profile" }] : []),
   ];
 
   return (

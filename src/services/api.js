@@ -121,6 +121,20 @@ export const updateUserProfile = async (userData) => {
   }
 };
 
+/**
+ * Logged in user er profile MongoDB theke delete kore.
+ * Server e '/api/auth/me' route e DELETE request pathay.
+ */
+export const deleteMyProfile = async () => {
+  try {
+    const response = await api.delete('/auth/me');
+    return response.data; // { msg: 'User deleted' } return korbe
+  } catch (error) {
+    console.error('Error deleting profile from DB:', error.response?.data?.msg || error.message);
+    toast.error(error.response?.data?.msg || 'Failed to delete profile data');
+    throw error;
+  }
+};
 
 
 export const getPartnerById = async (id) => {
@@ -132,6 +146,33 @@ export const getPartnerById = async (id) => {
   } catch (error) {
     console.error('Error fetching partner by ID:', error.response?.data?.msg || error.message);
     toast.error(error.response?.data?.msg || 'Failed to fetch partner');
+    throw error;
+  }
+};
+
+export const sendConnectionRequest = async (partnerId) => {
+  try {
+    const response = await api.post(`/auth/request/send/${partnerId}`);
+    toast.success(response.data.msg || 'Request Sent!');
+    return response.data;
+  } catch (error) {
+    console.error('Error sending request:', error.response?.data?.msg || error.message);
+    toast.error(error.response?.data?.msg || 'Failed to send request');
+    throw error;
+  }
+};
+
+/**
+ * Pathano request cancel kore
+ */
+export const cancelConnectionRequest = async (partnerId) => {
+  try {
+    const response = await api.post(`/auth/request/cancel/${partnerId}`);
+    toast.success(response.data.msg || 'Request Cancelled!');
+    return response.data;
+  } catch (error) {
+    console.error('Error cancelling request:', error.response?.data?.msg || error.message);
+    toast.error(error.response?.data?.msg || 'Failed to cancel request');
     throw error;
   }
 };

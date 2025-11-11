@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getPartnerById } from '../../services/api';
 import PageLoader from '../../components/Spinner/PageLoader';
-import { ArrowLeft, Star, MapPin, Clock, Users, Award, Wifi, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Star, MapPin, Clock, Users, Award, Wifi, MessageSquare, XCircle, CheckCircle } from 'lucide-react'; // <-- Notun Icon
 import { toast } from 'react-toastify';
+import { useAuth } from '../../context/AuthContext'; // <-- AuthContext Import
 
 // Helper function to get initials from name
 const getInitials = (name) => {
@@ -19,6 +20,11 @@ const PartnerDetail = () => {
   const { id } = useParams(); // URL theke partner ID neyar jonno
   const navigate = useNavigate(); // "Back" button-er jonno
   
+  // --- NOTUN AUTH STATE (START) ---
+  const { user, userData, sendRequest, cancelRequest } = useAuth();
+  const [hasSentRequest, setHasSentRequest] = useState(false);
+  // --- NOTUN AUTH STATE (END) ---
+
   const [partner, setPartner] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -50,12 +56,39 @@ const PartnerDetail = () => {
     fetchPartner();
   }, [id]);
 
+  // --- NOTUN EFFECT (START) ---
+  // Check if a request has already been sent to this partner
+  useEffect(() => {
+    if (userData && userData.sentRequests && id) {
+      // Check if the current partner's ID is in the user's sentRequests array
+      const partnerObjectId = partner?._id; // 'id' URL theke asha string, partner._id o string
+      setHasSentRequest(userData.sentRequests.includes(id) || userData.sentRequests.includes(partnerObjectId));
+    }
+  }, [userData, id, partner]);
+  // --- NOTUN EFFECT (END) ---
+
+
+  // --- HANLDER UPDATE (START) ---
   const handleSendRequest = (e) => {
     e.preventDefault();
-    // Ekhane partner request pathanor logic add kora jete pare
-    toast.success(`Partner request sent to ${partner.name}!`);
-    setMessage('');
+    if (!user) {
+      toast.error('Please log in to send a request.');
+      navigate('/login');
+      return;
+    }
+    sendRequest(id); // 'id' hocche partner-er _id from URL
   };
+
+  const handleCancelRequest = (e) => {
+    e.preventDefault();
+    if (!user) {
+      toast.error('Please log in');
+      return;
+    }
+    cancelRequest(id);
+  };
+  // --- HANLDER UPDATE (END) ---
+
 
   if (loading) {
     return <PageLoader />;
@@ -170,8 +203,9 @@ const PartnerDetail = () => {
                 </div>
               </div>
 
+              {/* --- BUTTON LOGIC UPDATE (START) --- */}
               {/* Send Message Section */}
-              <form onSubmit={handleSendRequest}>
+              <form onSubmit={hasSentRequest ? handleCancelRequest : handleSendRequest}>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
                   Send a Message <span className="text-sm text-gray-500 font-normal">(Optional)</span>
                 </h3>
@@ -181,14 +215,30 @@ const PartnerDetail = () => {
                   rows="4"
                   className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                   placeholder="Introduce yourself and explain why you'd like to study together..."
+                  disabled={hasSentRequest} // Request pathale message likhte parbe na
                 />
-                <button
-                  type="submit"
-                  className="mt-4 px-8 py-3 bg-cyan-600 text-white font-semibold rounded-lg hover:bg-cyan-700 transition-colors"
-                >
-                  Send Partner Request
-                </button>
+
+                {hasSentRequest ? (
+                  // Jodi request pathano hoye thake
+                  <button
+                    type="submit"
+                    className="mt-4 px-8 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+                  >
+                    <XCircle className="w-5 h-5" />
+                    Cancel Partner Request
+                  </button>
+                ) : (
+                  // Jodi request na pathano hoy
+                  <button
+                    type="submit"
+                    className="mt-4 px-8 py-3 bg-cyan-600 text-white font-semibold rounded-lg hover:bg-cyan-700 transition-colors flex items-center gap-2"
+                  >
+                    <CheckCircle className="w-5 h-5" />
+                    Send Partner Request
+                  </button>
+                )}
               </form>
+              {/* --- BUTTON LOGIC UPDATE (END) --- */}
             </div>
           </div>
 

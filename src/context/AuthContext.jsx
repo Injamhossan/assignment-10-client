@@ -9,7 +9,8 @@ import {
   signOut,
   onAuthStateChanged,
   updateProfile,
-  getIdToken // <-- Notun import
+  getIdToken, 
+  deleteUser 
 } from 'firebase/auth';
 import { auth } from '../firebase/firebase.config';
 import { toast } from 'react-toastify';
@@ -18,7 +19,10 @@ import {
   registerUser, 
   loginUser, 
   getMyProfile, 
-  updateUserProfile as apiUpdateUserProfile // 'updateUserProfile' naam-e conflict er jonno alias
+  updateUserProfile as apiUpdateUserProfile,
+  deleteMyProfile,
+  sendConnectionRequest, // <-- Notun import
+  cancelConnectionRequest // <-- Notun import
 } from '../services/api';
 
 const AuthContext = createContext();
@@ -39,7 +43,7 @@ export const AuthProvider = ({ children }) => {
   // Login ba registration er por JWT token save kore
   const handleAuthResponse = (data) => {
     if (data.token) {
-      localStorage.setItem('token', data.token); // <-- SHOBCHEYE GURUTTWOPURNO KAJ
+      localStorage.setItem('token', data.token); 
     }
     if (data.user) {
       setUserData(data.user); // MongoDB theke আসা user data set kora
@@ -51,12 +55,9 @@ export const AuthProvider = ({ children }) => {
       if (currentUser) {
         setUser(currentUser); // Firebase user set kora
         
-        // currentUser login korar shathe shathe server theke data load korar cheshta
         try {
-          // Firebase token (JWT noy) refresh kora
           const firebaseToken = await getIdToken(currentUser, true);
           
-          // Ebar server e login kore JWT token ebong MongoDB data ana
           const loginData = { 
             email: currentUser.email,
             firebaseToken: firebaseToken 
@@ -66,14 +67,10 @@ export const AuthProvider = ({ children }) => {
           handleAuthResponse(data); // Token save hobe, user data set hobe
           
         } catch (error) {
-          // Jemon user MongoDB te nei, kintu Firebase e ache (Google Sign In)
           console.error('onAuthStateChanged error (maybe user not in DB yet):', error.message);
           if (error.response && error.response.status === 404) {
-             // User Firebase e ache kintu amader DB te nei. Register korte hobe.
-             // Google Sign In er flow-e eta normal
              console.log("User not in DB. Google Sign In will handle registration.");
           } else {
-            // Onno kono error hole logout
             console.error('Failed to auto-login to server, logging out.');
             await signOut(auth);
           }
@@ -92,23 +89,20 @@ export const AuthProvider = ({ children }) => {
   // Register with email and password
   const register = async (email, password, name) => {
     try {
-      // Step 1: Firebase e user create
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName: name });
       
-      // Step 2: Firebase theke token ber kora
       const firebaseToken = await getIdToken(userCredential.user);
 
-      // Step 3: MongoDB server e register kora
       const userDataToSend = {
         name: name,
         email: email,
-        password: password, // Server password chay tai pathano hocche
+        password: password, 
         firebaseToken: firebaseToken
       };
       
-      const data = await registerUser(userDataToSend); // api.js theke
-      handleAuthResponse(data); // <-- Token save hobe
+      const data = await registerUser(userDataToSend); 
+      handleAuthResponse(data); 
       
       toast.success('Account created successfully!');
       return userCredential.user;
@@ -122,21 +116,18 @@ export const AuthProvider = ({ children }) => {
   // Login with email and password
   const login = async (email, password) => {
     try {
-      // Step 1: Firebase e Sign in
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       
-      // Step 2: Firebase theke token ber kora
       const firebaseToken = await getIdToken(userCredential.user);
 
-      // Step 3: MongoDB server e login kora
       const loginData = {
         email: email,
-        password: password, // Server password chay tai pathano hocche
+        password: password, 
         firebaseToken: firebaseToken
       };
 
-      const data = await loginUser(loginData); // api.js theke
-      handleAuthResponse(data); // <-- Token save hobe
+      const data = await loginUser(loginData); 
+      handleAuthResponse(data); 
       
       toast.success('Login successful!');
       return userCredential.user;
@@ -153,34 +144,28 @@ export const AuthProvider = ({ children }) => {
       const provider = new GoogleAuthProvider();
       const userCredential = await signInWithPopup(auth, provider);
       
-      // Step 2: Firebase theke token ber kora
       const firebaseToken = await getIdToken(userCredential.user);
       
-      // Step 3: MongoDB server e register kora
       const userDataToSend = {
         name: userCredential.user.displayName,
         email: userCredential.user.email,
-        // Password pathano hocche na (server code eta handle korbe)
         firebaseToken: firebaseToken
       };
       
-      // Ebar amra register korar cheshta korbo
       try {
         const data = await registerUser(userDataToSend);
-        handleAuthResponse(data); // Token save hobe
+        handleAuthResponse(data); 
       } catch (error) {
-        // Jodi user agei register thake (400/409 error), tahole login korbo
         if (error.response && (error.response.status === 400 || error.response.status === 409)) {
           console.log('User already in DB, logging in...');
           const loginData = {
             email: userCredential.user.email,
             firebaseToken: firebaseToken
-            // Password dorkar nei, karon server logic eta handle korbe
           };
           const data = await loginUser(loginData);
-          handleAuthResponse(data); // Token save hobe
+          handleAuthResponse(data); 
         } else {
-          throw error; // Onno error hole show korbe
+          throw error; 
         }
       }
       
@@ -198,10 +183,9 @@ export const AuthProvider = ({ children }) => {
     try {
       await signOut(auth);
       setUserData(null);
-      localStorage.removeItem('token'); // <-- Token remove kora
+      localStorage.removeItem('token'); 
       toast.success('Logged out successfully!');
     } catch (error) {
-      // Ei block-ti "..." diye replace hoyechilo
       const errorMessage = error.message || 'Logout failed';
       toast.error(errorMessage);
       throw error;
@@ -226,8 +210,7 @@ export const AuthProvider = ({ children }) => {
         }
         
         // Update in MongoDB
-        // token thekei server bujhte parbe kon user
-        const updatedMongoUser = await apiUpdateUserProfile(userDataFromForm); // api.js theke
+        const updatedMongoUser = await apiUpdateUserProfile(userDataFromForm); 
         
         // Update local state
         setUserData(updatedMongoUser); // Server theke asha notun data diye state update
@@ -241,15 +224,71 @@ export const AuthProvider = ({ children }) => {
         toast.success('Profile updated successfully!');
       }
     } catch (error) {
-      // Ei block-ti "..." diye replace hoyechilo
       const errorMessage = error.response?.data?.message || error.message || 'Profile update failed';
       toast.error(errorMessage);
       throw error;
     }
   };
 
+  // Delete user account
+  const deleteAccount = async () => {
+    try {
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        throw new Error('No user is currently logged in.');
+      }
+
+      // Step 1: Delete user data from MongoDB
+      await deleteMyProfile(); // api.js theke
+
+      // Step 2: Delete user from Firebase
+      await deleteUser(currentUser);
+
+      toast.success('Account deleted successfully.');
+
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      
+      let errorMessage = error.response?.data?.msg || error.message || 'Failed to delete account.';
+
+      if (error.code === 'auth/requires-recent-login') {
+        errorMessage = 'This is a sensitive operation. Please log out and log back in before deleting your account.';
+      }
+
+      toast.error(errorMessage);
+      throw error; 
+    }
+  };
+
+  // --- NOTUN FUNCTION (START) ---
+  const sendRequest = async (partnerId) => {
+    try {
+      await sendConnectionRequest(partnerId);
+      // Local state update kora jate UI instant update hoy
+      setUserData(prevData => ({
+        ...prevData,
+        sentRequests: [...(prevData.sentRequests || []), partnerId]
+      }));
+    } catch (error) {
+      // toast.error(...) api.js thekei handle kora hocche
+    }
+  };
+
+  const cancelRequest = async (partnerId) => {
+    try {
+      await cancelConnectionRequest(partnerId);
+      // Local state update kora
+      setUserData(prevData => ({
+        ...prevData,
+        sentRequests: (prevData.sentRequests || []).filter(id => id !== partnerId)
+      }));
+    } catch (error) {
+      // toast.error(...) api.js thekei handle kora hocche
+    }
+  };
+  // --- NOTUN FUNCTION (END) ---
+
   const value = {
-    // Ei object-ti "..." diye replace hoyechilo
     user,
     userData,
     loading,
@@ -257,7 +296,10 @@ export const AuthProvider = ({ children }) => {
     login,
     googleSignIn,
     logout,
-    updateUserProfile
+    updateUserProfile,
+    deleteAccount,
+    sendRequest, // <-- Notun export
+    cancelRequest // <-- Notun export
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
