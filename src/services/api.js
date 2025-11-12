@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://assignment-10-server-ivory-eta.vercel.app/api/';
 
 // Axios instance toiri kora
 const api = axios.create({
@@ -20,13 +20,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// --- Auth Routes (Server er shathe match kora) ---
 
-/**
- * User ke MongoDB te register kore.
- * Server er niyom onujayi, `userData` object e obosshoi
- * name, email, password, ebong firebaseToken thakte hobe.
- */
 export const registerUser = async (userData) => {
   try {
     // '/users/register' NOY, '/auth/register' HOBE
@@ -40,11 +34,7 @@ export const registerUser = async (userData) => {
   }
 };
 
-/**
- * User ke MongoDB theke login koray.
- * Server er niyom onujayi, `loginData` object e obosshoi
- * email, password, ebong firebaseToken thakte hobe.
- */
+
 export const loginUser = async (loginData) => {
   try {
     const response = await api.post('/auth/login', loginData);
