@@ -9,7 +9,7 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
   const { theme, toggleTheme } = useTheme();
-  const { user, logout, partnerData, loading } = useAuth(); // --- partnerData ebong loading nilam ---
+  const { user, logout, partnerData, loading } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -21,7 +21,6 @@ const Navbar = () => {
       console.error('Logout error:', error);
     }
   };
-
 
   useEffect(() => {
     const onDocClick = (e) => {
@@ -36,11 +35,14 @@ const Navbar = () => {
   const links = [
     { to: "/", label: "Home" },
     { to: "/findpartners", label: "Find Partners" },
-    // Conditionally show Create or Edit Profile
+    // Conditionally show Create or Edit Profile (Shudhu logged in user-er jonno)
     !loading && user && partnerData && { to: "/createprofile", label: "Edit Profile" },
     !loading && user && !partnerData && { to: "/createprofile", label: "Create Profile" },
-    { to: "/myconnection", label: "My Connection" },
-  ].filter(Boolean); // .filter(Boolean) false entrygulo remove kore dey
+    
+    // --- SHOMADHAN: 'My Connection' shudhu user thaklei dekhabe ---
+    user && { to: "/myconnection", label: "My Connection" },
+
+  ].filter(Boolean); // .filter(Boolean) shob false/null entrygulo remove kore dey
   // --- LINKS LOGIC PORIBORTON (END) ---
 
   return (

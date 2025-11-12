@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, User } from 'lucide-react';
+import { Mail, Lock, User, Link as LinkIcon } from 'lucide-react';
+// --- PORIBORTON: Import path thik kora hoyeche ---
 import NavLogo from '../../assets/StudyMate.png';
 import PageLoader from '../../components/Spinner/PageLoader';
 import { useAuth } from '../../context/AuthContext';
@@ -11,6 +12,7 @@ const Register = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    photoURL: '',
     password: '',
     confirmPassword: '',
   });
@@ -66,6 +68,12 @@ const Register = () => {
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email is invalid';
     }
+    
+    // photoURL optional
+    if (formData.photoURL && !/^https?:\/\/.+/.test(formData.photoURL)) {
+      newErrors.photoURL = 'Please enter a valid URL (e.g., http:// or https://)';
+    }
+
 
     const passwordError = validatePassword(formData.password);
     if (passwordError) {
@@ -81,13 +89,14 @@ const Register = () => {
       return;
     }
 
-    // Handle registration logic here
     setFormLoading(true);
     try {
-      await register(formData.email, formData.password, formData.name);
+      await register(formData.email, formData.password, formData.name, formData.photoURL);
+      
       setFormData({
         name: '',
         email: '',
+        photoURL: '',
         password: '',
         confirmPassword: '',
       });
@@ -95,6 +104,18 @@ const Register = () => {
       navigate('/');
     } catch (error) {
       console.error('Registration error:', error);
+      // Server-side error handle kora
+      if (error.response && error.response.data && error.response.data.msg) {
+        // Jodi error-ti email duplicate hoy
+        if (error.response.data.msg.includes('Email already registered')) {
+          setErrors({ email: 'This email is already registered.' });
+        } else {
+          // Onnano server error
+          setErrors({ form: error.response.data.msg });
+        }
+      } else {
+        setErrors({ form: 'Registration failed. Please try again.' });
+      }
     } finally {
       setFormLoading(false);
     }
@@ -107,6 +128,7 @@ const Register = () => {
       navigate('/');
     } catch (error) {
       console.error('Google registration error:', error);
+      setErrors({ form: 'Google Sign-in failed. Please try again.' });
     } finally {
       setFormLoading(false);
     }
@@ -131,6 +153,9 @@ const Register = () => {
         {/* Registration Form Card */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 border border-gray-200 dark:border-gray-700">
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* --- General Form Error --- */}
+            {errors.form && <p className="mt-1 text-sm text-red-500 text-center">{errors.form}</p>}
+
             {/* Name Field */}
             <div>
               <label htmlFor="name" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
@@ -177,6 +202,29 @@ const Register = () => {
                 />
               </div>
               {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
+            </div>
+            
+            {/* Photo URL (Optional) */}
+            <div>
+              <label htmlFor="photoURL" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Photo URL (Optional)
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <LinkIcon className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  id="photoURL"
+                  type="text"
+                  value={formData.photoURL}
+                  onChange={(e) => handleChange('photoURL', e.target.value)}
+                  placeholder="https://example.com/image.png"
+                  className={`block w-full pl-10 pr-3 py-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500 focus:border-transparent transition-colors ${
+                    errors.photoURL ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                  }`}
+                />
+              </div>
+              {errors.photoURL && <p className="mt-1 text-sm text-red-500">{errors.photoURL}</p>}
             </div>
 
             {/* Password Field */}
@@ -270,7 +318,7 @@ const Register = () => {
               disabled={formLoading}
               className="w-full bg-[#300A91] dark:bg-purple-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#3C0AA4] dark:hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500 focus:ring-offset-2 transition-colors shadow-lg hover:shadow-xl mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {formLoading ? 'Creating Account...' : 'Create Account'}
+              {formLoading ? 'Creating Account...' : 'Creating Account'}
             </button>
           </form>
 
