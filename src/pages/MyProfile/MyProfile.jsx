@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Mail, Save, Edit2, X, Trash2 } from 'lucide-react'; // <-- Trash2 Import
+import { User, Mail, Save, Edit2, X, Trash2 } from 'lucide-react'; 
 import PageLoader from '../../components/Spinner/PageLoader';
 import { useAuth } from '../../context/AuthContext';
-import { getMyProfile } from '../../services/api'; //
+import { getMyProfile } from '../../services/api'; 
 
 const MyProfile = () => {
   const [loading, setLoading] = useState(true);
   const [formLoading, setFormLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const { user, userData, updateUserProfile, logout, deleteAccount } = useAuth(); // <-- deleteAccount nilam
+  const { user, updateUserProfile, deleteAccount } = useAuth();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -99,15 +99,12 @@ const MyProfile = () => {
       setFormLoading(true);
       try {
         await deleteAccount();
-        // AuthContext-er onAuthStateChanged listener handle korbe, 
-        // kintu amra user-ke sorasori home-e pathiye debo.
         navigate('/'); 
       } catch (error) {
-        // Error toast AuthContext thekei dekhano hobe
+        
         console.error('Delete account failed (in component):', error);
         setFormLoading(false);
       }
-      // Success hole component unmount hobe, tai loading false korar dorkar nei
     }
   };
 

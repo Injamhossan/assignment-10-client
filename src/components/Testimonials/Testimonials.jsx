@@ -17,28 +17,28 @@ const testimonialData = [
     name: 'Sarah Johnson',
     role: 'Computer Science Student',
     quote: 'StudyMate helped me find a partner for my final year project. We aced it! The platform is intuitive and very effective.',
-    image: 'https://i.ibb.co/6yqfL81/profile1.jpg', // Placeholder image
+    image: 'https://i.ibb.co.com/nszfCGF6/image.png', 
     rating: 5,
   },
   {
     name: 'Michael Chen',
     role: 'Mathematics Major',
     quote: 'I was struggling with advanced calculus. Finding a study buddy here made learning collaborative and fun. Highly recommended!',
-    image: 'https://i.ibb.co/3kC2C31/profile2.jpg', // Placeholder image
+    image: 'https://i.ibb.co.com/m5w8p5tN/image.png', 
     rating: 5,
   },
   {
     name: 'Emily Rodriguez',
     role: 'Physics Enthusiast',
     quote: 'The "Top Students" feature is amazing. I connected with an expert who helped me understand complex theories. A game-changer!',
-    image: 'https://i.ibb.co/d6QZB04/profile3.jpg', // Placeholder image
+    image: 'https://i.ibb.co.com/7xF3gzvH/image.png', // Placeholder image
     rating: 4,
   },
   {
     name: 'David Kim',
     role: 'Data Science Aspirant',
     quote: 'A great platform to find peers for group studies and assignments. The search filter is very accurate.',
-    image: 'https://i.ibb.co/yY1kG0z/profile4.jpg', // Placeholder image
+    image: 'https://i.ibb.co.com/20W29pKw/image.png', // Placeholder image
     rating: 5,
   },
 ];
