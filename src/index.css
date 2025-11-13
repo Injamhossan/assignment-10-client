@@ -1,17 +1,3 @@
-/* 
-  ===========================================
-  COLOR SYSTEM - CHANGE COLORS HERE
-  ===========================================
-  All colors are defined here as CSS variables.
-  Change the values below to update colors across the entire app.
-  
-  Usage in React/JSX:
-  - Tailwind classes: bg-primary, text-primary, bg-gray, text-text, etc.
-  - Gradient: bg-secondary-gradient, text-secondary-gradient
-  - Direct CSS: var(--primary-color), var(--text-color), etc.
-  ===========================================
-*/
-
 :root {
   color-scheme: light;
   

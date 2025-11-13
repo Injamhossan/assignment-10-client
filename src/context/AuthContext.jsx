@@ -1,4 +1,3 @@
-// src/context/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import {
   createUserWithEmailAndPassword,
@@ -32,8 +31,8 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // firebase user
-  const [userData, setUserData] = useState(null); // app user from server (contains sentRequests etc)
+  const [user, setUser] = useState(null); 
+  const [userData, setUserData] = useState(null); 
   const [partnerData, setPartnerData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -68,8 +67,7 @@ export const AuthProvider = ({ children }) => {
         } catch (err) {
           console.error('onAuthStateChanged loginUser error:', err?.message || err);
           if (err.response?.status === 404) {
-            // user not in DB yet — may be created on Google sign-in etc.
-            console.log('User not in DB yet.');
+                        console.log('User not in DB yet.');
           } else {
             await signOut(auth);
           }
@@ -86,9 +84,7 @@ export const AuthProvider = ({ children }) => {
     return () => unsub();
   }, [handleAuthResponse]);
 
-  // register/login/logout/update/delete omitted for brevity but expected to be same as earlier
-  // I'll include register/login/logout/updateUserProfile/deleteAccount/sendRequest/cancelRequest
-
+  
   const register = async (email, password, name) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -215,7 +211,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // CANCEL: optimistic update + rollback (matches server route DELETE /auth/request/cancel/:partnerId)
+  
   const cancelRequest = async (partnerId) => {
     if (!partnerId) throw new Error('partnerId required');
 
@@ -228,7 +224,7 @@ export const AuthProvider = ({ children }) => {
     });
 
     try {
-      await cancelConnectionRequest(partnerId); // hits DELETE /auth/request/cancel/:partnerId
+      await cancelConnectionRequest(partnerId); 
       toast.success('Cancelled request');
     } catch (err) {
       console.error('cancelRequest error, rolling back:', err);

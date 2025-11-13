@@ -1,8 +1,7 @@
-// src/services/api.js
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://assignment-10-server-ivory-eta.vercel.app/api/';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://assignment-10-server-ivory-eta.vercel.app/api/';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -19,7 +18,7 @@ api.interceptors.request.use((config) => {
   return config;
 }, (err) => Promise.reject(err));
 
-// --- Auth / User ---
+
 export const registerUser = async (userData) => {
   try {
     const res = await api.post('/auth/register', userData);
@@ -139,18 +138,13 @@ export const sendConnectionRequest = async (partnerId) => {
   }
 };
 
-/**
- * cancelConnectionRequest matches your server route:
- * DELETE /api/auth/request/cancel/:partnerId
- */
 export const cancelConnectionRequest = async (partnerId) => {
   try {
     const res = await api.delete(`/auth/request/cancel/${partnerId}`);
-    // no toast here — caller (AuthContext) will show toast on success/err if desired
-    return res.data;
+        return res.data;
   } catch (error) {
     console.error('cancelConnectionRequest error:', error.response?.status, error.response?.data || error.message);
-    // bubble up the error so the caller can rollback UI
+    
     throw error;
   }
 };

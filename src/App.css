@@ -18,8 +18,7 @@
     --color-accent: var(--gray-color);
 }
 
-/* Tailwind theme configuration - makes colors available as utility classes */
-/* Now you can use: bg-primary, text-primary, bg-text, bg-gray, bg-light-gray, etc. */
+
 @theme {
   --color-primary: var(--primary-color);
   --color-text: var(--text-color);

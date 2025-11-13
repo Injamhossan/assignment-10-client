@@ -1,25 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import PageLoader from '../../components/Spinner/PageLoader';
-// PartnerCard component-er path thik ache kina check korben
 import PartnerCard from '../../components/PartnerCard/PartnerCard'; 
 import { getPartners } from '../../services/api';
 import { Search, ChevronDown } from 'lucide-react';
 
 const FindPartners = () => {
   const [loading, setLoading] = useState(true);
-  const [partners, setPartners] = useState([]); // Master list from API
+  const [partners, setPartners] = useState([]); 
   const [displayedPartners, setDisplayedPartners] = useState([]); 
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortCriteria, setSortCriteria] = useState('rating-desc'); // Default sort
+  const [sortCriteria, setSortCriteria] = useState('rating-desc');
 
-  // Fetch partners from API on component mount
   useEffect(() => {
     const fetchPartners = async () => {
       try {
         const data = await getPartners();
         setPartners(data);
-        setDisplayedPartners(data); // Initially, display all
-      } catch (error) {
+        setDisplayedPartners(data); 
+         } catch (error) {
         console.error('Error fetching partners:', error);
         setPartners([]);
         setDisplayedPartners([]);
@@ -31,28 +29,28 @@ const FindPartners = () => {
     fetchPartners();
   }, []);
 
-  // Handle filtering and sorting whenever search or sort criteria change
+  
   useEffect(() => {
     let processedPartners = [...partners];
 
-    // 1. Filter based on searchTerm
+    
     if (searchTerm.trim() !== '') {
       const searchLower = searchTerm.toLowerCase();
       processedPartners = processedPartners.filter(partner => {
-        // Check all relevant fields for a match
+       
         return (
           partner.name?.toLowerCase().includes(searchLower) ||
           partner.location?.toLowerCase().includes(searchLower) ||
-          (partner.education?.toLowerCase().includes(searchLower)) || // Assuming server adds this
-          (partner.interests?.toLowerCase().includes(searchLower)) || // Assuming server adds this
-          (partner.bio?.toLowerCase().includes(searchLower)) || // Assuming server adds this
-          partner.subject?.toLowerCase().includes(searchLower) || // Added subject
-          partner.level?.toLowerCase().includes(searchLower) // Added level
+          (partner.education?.toLowerCase().includes(searchLower)) || 
+          (partner.interests?.toLowerCase().includes(searchLower)) || 
+          (partner.bio?.toLowerCase().includes(searchLower)) || 
+          partner.subject?.toLowerCase().includes(searchLower) || 
+          partner.level?.toLowerCase().includes(searchLower) 
         );
       });
     }
 
-    // 2. Sort the filtered list
+  
     switch (sortCriteria) {
       case 'rating-desc':
         processedPartners.sort((a, b) => (b.rating || 0) - (a.rating || 0));
@@ -67,7 +65,7 @@ const FindPartners = () => {
         processedPartners.sort((a, b) => b.name.localeCompare(a.name));
         break;
       default:
-        // Do nothing, keep original (filtered) order
+      
     }
 
     setDisplayedPartners(processedPartners);

@@ -1,11 +1,10 @@
-// src/pages/CreatePartner/CreatePartner.jsx
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { createPartner, updatePartnerProfile } from '../../services/api'; 
 import PageLoader from '../../components/Spinner/PageLoader';
-import { toast } from 'react-toastify'; // Eti rakha hoyeche shudhu validation error dekhanor jonno
+import { toast } from 'react-toastify';
 import { User, Mail, Book, BarChart, Wifi, MapPin, Clock, Info, Image as ImageIcon } from 'lucide-react';
 
 const CreatePartner = () => {
@@ -92,15 +91,10 @@ const CreatePartner = () => {
       }
 
       await checkAndSetPartnerData(user.email);
-
-      // --- PORIBORTON: Duplicate toast remove kora hoyeche ---
-      // toast.success(partnerData ? 'Profile updated successfully!' : 'Profile created successfully!');
       
       navigate('/findpartners'); 
 
     } catch (error) {
-      // --- PORIBORTON: Duplicate toast remove kora hoyeche ---
-      // toast.error(partnerData ? 'Failed to update profile' : 'Failed to create profile');
       
       console.error('Error in handleSubmit:', error);
     } finally {

@@ -21,31 +21,31 @@ export const router = createBrowserRouter([
         element: <Home/>
       },
       {
-        path: "/findpartners",
+        path: "findpartners",
         element: <FindPartners/>
       },
       {
-        path: "/partner/:id", 
+        path: "partner/:id", 
         element: <PartnerDetail />
       },
       {
-        path: "/createprofile",
+        path: "createprofile",
         element: <CreatePartner/>
       },
       {
-        path: "/myconnection",
+        path: "myconnection",
         element: <MyConnections/>
       },
       {
-        path: "/myprofile",
+        path: "myprofile",
         element: <MyProfile/>
       },
       {
-        path: "/login",
+        path: "login",
         element: <Login/>
       },
       {
-        path: "/register",
+        path: "register",
         element: <Register/>
       },
       {
