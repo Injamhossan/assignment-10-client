@@ -8,21 +8,21 @@ const HowItWorks = () => {
       title: 'Find',
       description: 'Search for study partners by subject, experience, and location',
       iconColor: 'text-white',
-      iconBg: 'bg-[#300A91] dark:bg-blue-500',
+      iconBg: 'bg-[#300A91] dark:bg-purple-600',
     },
     {
       icon: Users,
       title: 'Connect',
       description: 'Send partner requests and start building your study network',
       iconColor: 'text-white',
-      iconBg: 'bg-[#300A91] dark:bg-blue-500',
+      iconBg: 'bg-[#300A91] dark:bg-purple-600',
     },
     {
       icon: MessageCircle,
       title: 'Study Together',
       description: 'Collaborate, share knowledge, and achieve your academic goals',
       iconColor: 'text-white',
-      iconBg: 'bg-[#300A91] dark:bg-blue-500',
+      iconBg: 'bg-[#300A91] dark:bg-purple-600',
     },
   ];
 

@@ -1,13 +1,19 @@
 import React from "react";
-import FooterLogo from "../../assets/StudyMate.png"
+import FooterLogo from "../../assets/StudyMate.png";
+import { FaFacebook, FaYoutube, FaLinkedin } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 
 const Footer = () => {
-
   return (
     <div className="mx-auto max-w-[1600px]">
+
       <footer className="footer sm:footer-horizontal text-base-content p-10">
         <aside>
-          <img src={FooterLogo} alt="" className="h-[60px] w-auto mx-[-25px]" />
+          <img
+            src={FooterLogo}
+            alt="Study Mate Logo"
+            className="h-[60px] w-auto mx-[-25px]"
+          />
           <p>
             Study Mate
             <br />
@@ -34,6 +40,49 @@ const Footer = () => {
           <a className="link link-hover">Privacy policy</a>
           <a className="link link-hover">Cookie policy</a>
         </nav>
+        <nav>
+          <h3 className="footer-title">Social Link</h3>
+          <div className="flex gap-4 md:place-self-center md:justify-self-end">
+            <a
+              href="https://twitter.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link link-hover"
+            >
+              <FaXTwitter size={24} />
+            </a>
+            <a
+              href="https://youtube.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link link-hover"
+            >
+              <FaYoutube size={24} />
+            </a>
+            <a
+              href="https://facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link link-hover"
+            >
+              <FaFacebook size={24} />
+            </a>
+            <a
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link link-hover"
+            >
+              <FaLinkedin size={24} />
+            </a>
+          </div>
+        </nav>
+      </footer>
+
+      <footer className="footer items-center justify-between border-t border-base-300 p-4 px-10 text-base-content">
+        <aside className="items-center">
+          <p>© {new Date().getFullYear()} Study Mate - All rights reserved.</p>
+        </aside>
       </footer>
     </div>
   );

@@ -11,9 +11,8 @@ const api = axios.create({
   }
 });
 
-// Request pathanor age token set kora (jodi thake)
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token'); // Assuming you store JWT token in localStorage
+  const token = localStorage.getItem('token'); 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -23,10 +22,9 @@ api.interceptors.request.use((config) => {
 
 export const registerUser = async (userData) => {
   try {
-    // '/users/register' NOY, '/auth/register' HOBE
     const response = await api.post('/auth/register', userData);
     toast.success('Registration Successful!');
-    return response.data; // { token, user } return korbe
+    return response.data; 
   } catch (error) {
     console.error('Error registering user:', error.response?.data?.msg || error.message);
     toast.error(error.response?.data?.msg || 'Registration failed');
@@ -39,7 +37,7 @@ export const loginUser = async (loginData) => {
   try {
     const response = await api.post('/auth/login', loginData);
     toast.success('Login Successful!');
-    return response.data; // { token, user } return korbe
+    return response.data; 
   } catch (error) {
     console.error('Error logging in:', error.response?.data?.msg || error.message);
     toast.error(error.response?.data?.msg || 'Login failed');
@@ -47,34 +45,25 @@ export const loginUser = async (loginData) => {
   }
 };
 
-/**
- * Logged in user er profile data token er maddhome ber kore.
- * Server e '/api/auth/me' route ache, '/api/users/:uid' nei.
- */
 export const getMyProfile = async () => {
   try {
     const response = await api.get('/auth/me');
-    return response.data.user; // { user: {...} } return kore
+    return response.data.user; 
   } catch (error) {
     console.error('Error fetching profile:', error.response?.data?.msg || error.message);
-    // Token expire hole ba kono problem hole error debe
     throw error;
   }
 };
 
-// --- Partners Routes (Server er shathe match kora) ---
+// --- Partners Routes ---
 
-/**
- * Shob partners der list ber kore
- */
 export const getPartners = async () => {
   try {
     const response = await api.get('/partners');
-    // Server er response structure onujayi data access
     if (response.data && Array.isArray(response.data.data)) {
       return response.data.data;
     }
-    return []; // No data found
+    return [];
   } catch (error) {
     console.error('Error fetching partners:', error.response?.data?.msg || error.message);
     toast.error(error.response?.data?.msg || 'Failed to fetch partners');
@@ -82,14 +71,11 @@ export const getPartners = async () => {
   }
 };
 
-/**
- * Notun partner profile toiri kore
- */
 export const createPartner = async (partnerData) => {
   try {
     const response = await api.post('/partners', partnerData);
     toast.success('Partner profile created successfully!');
-    return response.data; // { success: true, data: {...} } return korbe
+    return response.data; 
   } catch (error) {
     console.error('Error creating partner:', error.response?.data?.msg || error.message);
     toast.error(error.response?.data?.msg || 'Failed to create partner profile');
@@ -97,9 +83,8 @@ export const createPartner = async (partnerData) => {
   }
 };
 
-// --- NOTUN FUNCTION (START) ---
 /**
- * Existing partner profile update kore
+ * Existing partner profile update
  */
 export const updatePartnerProfile = async (partnerId, partnerData) => {
   try {
@@ -112,15 +97,13 @@ export const updatePartnerProfile = async (partnerId, partnerData) => {
     throw error;
   }
 };
-// --- NOTUN FUNCTION (END) ---
+
 
 export const updateUserProfile = async (userData) => {
   try {
-    // userData object-e name, password, bio, etc. thakte pare
-    const response = await api.put('/auth/me', userData);
-    
+    const response = await api.put('/auth/me', userData); 
     toast.success(response.data.msg || 'Profile updated successfully!');
-    return response.data.user; // updated user object return korbe
+    return response.data.user; 
   } catch (error) {
     console.error('Error updating profile:', error.response?.data?.msg || error.message);
     toast.error(error.response?.data?.msg || 'Profile update failed');
@@ -128,14 +111,10 @@ export const updateUserProfile = async (userData) => {
   }
 };
 
-/**
- * Logged in user er profile MongoDB theke delete kore.
- * Server e '/api/auth/me' route e DELETE request pathay.
- */
 export const deleteMyProfile = async () => {
   try {
     const response = await api.delete('/auth/me');
-    return response.data; // { msg: 'User deleted' } return korbe
+    return response.data; 
   } catch (error) {
     console.error('Error deleting profile from DB:', error.response?.data?.msg || error.message);
     toast.error(error.response?.data?.msg || 'Failed to delete profile data');
@@ -148,7 +127,7 @@ export const getPartnerById = async (id) => {
   try {
     const response = await api.get(`/partners/${id}`);
     if (response.data && response.data.data) {
-      return response.data.data; // Server 'data' object-er moddhe partner object-ti pathay
+      return response.data.data;
     }
   } catch (error) {
     console.error('Error fetching partner by ID:', error.response?.data?.msg || error.message);
@@ -169,9 +148,7 @@ export const sendConnectionRequest = async (partnerId) => {
   }
 };
 
-/**
- * Pathano request cancel kore
- */
+
 export const cancelConnectionRequest = async (partnerId) => {
   try {
     const response = await api.post(`/auth/request/cancel/${partnerId}`);

@@ -1,4 +1,4 @@
-// context/AuthContext.jsx
+// src/context/AuthContext.jsx
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { 
@@ -23,7 +23,7 @@ import {
   deleteMyProfile,
   sendConnectionRequest, 
   cancelConnectionRequest,
-  getPartners // <-- Notun import
+  getPartners
 } from '../services/api';
 
 const AuthContext = createContext();
@@ -39,11 +39,9 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [userData, setUserData] = useState(null); // Ei state apnar MongoDB data rakhbe
-  const [partnerData, setPartnerData] = useState(null); // --- NOTUN STATE ---
+  const [userData, setUserData] = useState(null); 
+  const [partnerData, setPartnerData] = useState(null); 
 
-  // --- NOTUN FUNCTION (START) ---
-  // Login-er por user-er partner profile check kore
   const checkAndSetPartnerData = async (email) => {
     if (!email) {
       setPartnerData(null);
@@ -62,24 +60,22 @@ export const AuthProvider = ({ children }) => {
       setPartnerData(null);
     }
   };
-  // --- NOTUN FUNCTION (END) ---
 
 
-  // Login ba registration er por JWT token save kore
   const handleAuthResponse = async (data) => {
     if (data.token) {
       localStorage.setItem('token', data.token); 
     }
     if (data.user) {
-      setUserData(data.user); // MongoDB theke আসা user data set kora
-      await checkAndSetPartnerData(data.user.email); // --- NOTUN CALL ---
+      setUserData(data.user); 
+      await checkAndSetPartnerData(data.user.email); 
     }
   };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        setUser(currentUser); // Firebase user set kora
+        setUser(currentUser); 
         
         try {
           const firebaseToken = await getIdToken(currentUser, true);
@@ -89,8 +85,8 @@ export const AuthProvider = ({ children }) => {
             firebaseToken: firebaseToken 
           };
           
-          const data = await loginUser(loginData); // api.js theke
-          await handleAuthResponse(data); // Token save hobe, user o partner data set hobe
+          const data = await loginUser(loginData); 
+          await handleAuthResponse(data); 
           
         } catch (error) {
           console.error('onAuthStateChanged error (maybe user not in DB yet):', error.message);
@@ -104,8 +100,8 @@ export const AuthProvider = ({ children }) => {
       } else {
         setUser(null);
         setUserData(null);
-        setPartnerData(null); // --- PORIBORTON: Logout hole partner data clear ---
-        localStorage.removeItem('token'); // Logout hole token remove
+        setPartnerData(null); 
+        localStorage.removeItem('token'); 
       }
       setLoading(false);
     });
@@ -131,11 +127,16 @@ export const AuthProvider = ({ children }) => {
       const data = await registerUser(userDataToSend); 
       await handleAuthResponse(data); 
       
-      toast.success('Account created successfully!');
+      // --- PORIBORTON: Duplicate toast remove kora hoyeche ---
+      // toast.success('Account created successfully!'); 
+      
       return userCredential.user;
     } catch (error) {
       const errorMessage = error.response?.data?.msg || error.message || 'Registration failed';
-      toast.error(errorMessage);
+      // --- PORIBORTON: Shudhu error toast-ti rakha hoyeche (jodi api.js fafail kore) ---
+      if (!error.response) {
+        toast.error(errorMessage);
+      }
       throw error;
     }
   };
@@ -156,11 +157,16 @@ export const AuthProvider = ({ children }) => {
       const data = await loginUser(loginData); 
       await handleAuthResponse(data); 
       
-      toast.success('Login successful!');
+      // --- PORIBORTON: Duplicate toast remove kora hoyeche ---
+      // toast.success('Login successful!'); 
+
       return userCredential.user;
     } catch (error) {
       const errorMessage = error.response?.data?.msg || error.message || 'Login failed';
-      toast.error(errorMessage);
+      // --- PORIBORTON: Shudhu error toast-ti rakha hoyeche ---
+       if (!error.response) {
+        toast.error(errorMessage);
+      }
       throw error;
     }
   };
@@ -196,11 +202,16 @@ export const AuthProvider = ({ children }) => {
         }
       }
       
-      toast.success('Google login successful!');
+      // --- PORIBORTON: Duplicate toast remove kora hoyeche ---
+      // toast.success('Google login successful!'); 
+      
       return userCredential.user;
     } catch (error) {
       const errorMessage = error.response?.data?.msg || error.message || 'Google login failed';
-      toast.error(errorMessage);
+      // --- PORIBORTON: Shudhu error toast-ti rakha hoyeche ---
+       if (!error.response) {
+        toast.error(errorMessage);
+      }
       throw error;
     }
   };
@@ -210,9 +221,9 @@ export const AuthProvider = ({ children }) => {
     try {
       await signOut(auth);
       setUserData(null);
-      setPartnerData(null); // --- PORIBORTON ---
+      setPartnerData(null); 
       localStorage.removeItem('token'); 
-      toast.success('Logged out successfully!');
+      toast.success('Logged out successfully!'); // Eti rakha thik ache
     } catch (error) {
       const errorMessage = error.message || 'Logout failed';
       toast.error(errorMessage);
@@ -249,11 +260,15 @@ export const AuthProvider = ({ children }) => {
         if (userDataFromForm.photoURL !== undefined) updatedFirebaseUser.photoURL = userDataFromForm.photoURL;
         setUser(updatedFirebaseUser);
         
-        toast.success('Profile updated successfully!');
+        // --- PORIBORTON: Duplicate toast remove kora hoyeche ---
+        // toast.success('Profile updated successfully!'); 
       }
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message || 'Profile update failed';
-      toast.error(errorMessage);
+      // --- PORIBORTON: Shudhu error toast-ti rakha hoyeche ---
+       if (!error.response) {
+        toast.error(errorMessage);
+      }
       throw error;
     }
   };
@@ -269,6 +284,7 @@ export const AuthProvider = ({ children }) => {
       await deleteMyProfile(); 
       await deleteUser(currentUser);
 
+      // Eti rakha thik ache, karon api.js success toast dey na
       toast.success('Account deleted successfully.');
 
     } catch (error) {
@@ -280,7 +296,10 @@ export const AuthProvider = ({ children }) => {
         errorMessage = 'This is a sensitive operation. Please log out and log back in before deleting your account.';
       }
 
-      toast.error(errorMessage);
+      // --- PORIBORTON: Shudhu error toast-ti rakha hoyeche ---
+       if (!error.response) {
+         toast.error(errorMessage);
+       }
       throw error; 
     }
   };
@@ -293,7 +312,7 @@ export const AuthProvider = ({ children }) => {
         sentRequests: [...(prevData.sentRequests || []), partnerId]
       }));
     } catch (error) {
-      // toast.error(...) api.js thekei handle kora hocche
+      // api.js theke toast ashbe
     }
   };
 
@@ -305,7 +324,7 @@ export const AuthProvider = ({ children }) => {
         sentRequests: (prevData.sentRequests || []).filter(id => id !== partnerId)
       }));
     } catch (error) {
-      // toast.error(...) api.js thekei handle kora hocche
+      console.log (error);
     }
   };
 
@@ -313,7 +332,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     userData,
-    partnerData, // --- NOTUN EXPORT ---
+    partnerData, 
     loading,
     register,
     login,
@@ -323,7 +342,7 @@ export const AuthProvider = ({ children }) => {
     deleteAccount,
     sendRequest, 
     cancelRequest,
-    checkAndSetPartnerData // --- NOTUN EXPORT --- (Profile update-er por call korar jonno)
+    checkAndSetPartnerData 
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

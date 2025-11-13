@@ -1,9 +1,12 @@
+// src/components/ConnectionCard/ConncectionCard.jsx
+
 import React from 'react';
 import { Edit, Trash2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { toast } from 'react-toastify';
+// --- PORIBORTON: toast import er dorkar nei ---
+// import { toast } from 'react-toastify'; 
 
-// Helper function (PartnerCard theke copy kora)
+// Helper function
 const getInitials = (name) => {
   if (!name) return 'S';
   const names = name.split(' ');
@@ -14,25 +17,26 @@ const getInitials = (name) => {
 };
 
 const ConnectionCard = ({ partner, status = 'pending', sentDate = 'N/A' }) => {
-  const { cancelRequest } = useAuth(); // Auth context theke cancel request function nilam
+  const { cancelRequest } = useAuth(); 
 
-  // --- PORIBORTON (START) ---
-  // handleCancel function-ti ke 'async' kora hoyeche
   const handleCancel = async () => {
     if (window.confirm(`Are you sure you want to cancel your request to ${partner.name}?`)) {
       try {
-        // 'await' add kora hoyeche jate API call shesh howar porjonto opekkha kore
         await cancelRequest(partner._id);
-        // Success toast ekhon shudhu API call successful holei dekhabe
-        toast.success('Request cancelled');
+        
+        // --- PORIBORTON: Duplicate toast remove kora hoyeche ---
+        // toast.success('Request cancelled'); 
+      
       } catch (error) {
-        // Error-ti ekhon thikbhabe catch hobe
-        toast.error('Failed to cancel request');
+        
+        // --- PORIBORTON: Duplicate toast remove kora hoyeche ---
+        // toast.error('Failed to cancel request'); 
+        
+        // Error-ti console e dekha jete pare, kintu toast api.js thekei ashbe
         console.error('Cancel request error:', error);
       }
     }
   };
-  // --- PORIBORTON (END) ---
 
   const isAccepted = status.toLowerCase() === 'accepted';
 
@@ -74,11 +78,11 @@ const ConnectionCard = ({ partner, status = 'pending', sentDate = 'N/A' }) => {
 
       {/* Action Buttons */}
       <div className="flex items-center gap-3">
-        {/* Edit Button (Disabled for now, as logic is not defined) */}
+        {/* Edit Button */}
         <button 
           title="Edit"
           className="p-2 rounded-md text-cyan-600 bg-cyan-100 hover:bg-cyan-200 dark:bg-cyan-900 dark:text-cyan-300 dark:hover:bg-cyan-800 transition-colors"
-          disabled // Logic na thakay disabled kora
+          disabled 
         >
           <Edit className="w-4 h-4" />
         </button>

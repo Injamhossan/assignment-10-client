@@ -1,13 +1,14 @@
+// src/pages/CreatePartner/CreatePartner.jsx
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { createPartner, updatePartnerProfile } from '../../services/api'; // <-- updatePartnerProfile import
+import { createPartner, updatePartnerProfile } from '../../services/api'; 
 import PageLoader from '../../components/Spinner/PageLoader';
-import { toast } from 'react-toastify';
+import { toast } from 'react-toastify'; // Eti rakha hoyeche shudhu validation error dekhanor jonno
 import { User, Mail, Book, BarChart, Wifi, MapPin, Clock, Info, Image as ImageIcon } from 'lucide-react';
 
 const CreatePartner = () => {
-  // --- PORIBORTON: partnerData ebong checkAndSetPartnerData nilam ---
   const { user, loading: authLoading, partnerData, checkAndSetPartnerData } = useAuth();
   const navigate = useNavigate();
   const [formLoading, setFormLoading] = useState(false);
@@ -20,35 +21,31 @@ const CreatePartner = () => {
     studyMode: '',
     location: '',
     availability: '',
-    about: '', // server 'about' expect kore
+    about: '', 
   });
 
-  // --- PORIBORTON: Pre-fill logic update kora holo ---
   useEffect(() => {
-    if (authLoading) return; // Auth load na howa porjonto opekkha
+    if (authLoading) return; 
     
-    // Jodi user login na thake, login page e pathiye deya
     if (!user) {
       navigate('/login');
       toast.info('Please log in to create or edit a profile.');
       return;
     }
 
-    // Jodi user-er 'partnerData' (partner profile) thake
     if (partnerData) {
       setFormData({
         name: partnerData.name || '',
-        email: user.email, // email shobshomoy auth user theke
+        email: user.email, 
         image: partnerData.image || '',
         subject: partnerData.subject || '',
         level: partnerData.level || '',
-        studyMode: partnerData.activeStatus || '', // server 'activeStatus' pathay
+        studyMode: partnerData.activeStatus || '', 
         location: partnerData.location || '',
         availability: partnerData.availability || '',
         about: partnerData.about || '',
       });
     } 
-    // Jodi partner profile na thake, kintu user login kora
     else if (user) {
       setFormData(prev => ({
         ...prev,
@@ -64,11 +61,9 @@ const CreatePartner = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // --- PORIBORTON: handleSubmit logic update kora holo ---
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Check for required fields
     const { name, subject, level, studyMode, location, availability, email } = formData;
     if (!name || !subject || !level || !studyMode || !location || !availability || !email) {
       toast.error('Please fill in all required fields.');
@@ -77,38 +72,36 @@ const CreatePartner = () => {
     
     setFormLoading(true);
     try {
-      // API-te pathanor jonno data toiri
       const partnerDataForApi = {
-        email: formData.email, // <-- Email pathano hocche
+        email: formData.email, 
         name: formData.name,
         image: formData.image,
         subject: formData.subject,
         level: formData.level,
-        activeStatus: formData.studyMode, // 'studyMode' maps to 'activeStatus'
+        activeStatus: formData.studyMode, 
         location: formData.location,
         availability: formData.availability,
         about: formData.about,
-        rating: partnerData?.rating || (Math.random() * (5 - 3.5) + 3.5).toFixed(1), // Puran rating thakle shetai, noyto notun
+        rating: partnerData?.rating || (Math.random() * (5 - 3.5) + 3.5).toFixed(1), 
       };
 
       if (partnerData) {
-        // --- UPDATE LOGIC ---
-        // Jodi partnerData thake, tahole update korbo
         await updatePartnerProfile(partnerData._id, partnerDataForApi);
       } else {
-        // --- CREATE LOGIC ---
-        // Jodi partnerData na thake, tahole create korbo
         await createPartner(partnerDataForApi);
       }
 
-      // Update korar por AuthContext-er partner data refresh kora
       await checkAndSetPartnerData(user.email);
 
-      toast.success(partnerData ? 'Profile updated successfully!' : 'Profile created successfully!');
-      navigate('/findpartners'); // Redirect to partners page after success
+      // --- PORIBORTON: Duplicate toast remove kora hoyeche ---
+      // toast.success(partnerData ? 'Profile updated successfully!' : 'Profile created successfully!');
+      
+      navigate('/findpartners'); 
 
     } catch (error) {
-      toast.error(partnerData ? 'Failed to update profile' : 'Failed to create profile');
+      // --- PORIBORTON: Duplicate toast remove kora hoyeche ---
+      // toast.error(partnerData ? 'Failed to update profile' : 'Failed to create profile');
+      
       console.error('Error in handleSubmit:', error);
     } finally {
       setFormLoading(false);
@@ -168,7 +161,7 @@ const CreatePartner = () => {
                   name="email"
                   type="email"
                   value={formData.email}
-                  disabled // Email is from auth and cannot be changed
+                  disabled 
                   className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 cursor-not-allowed"
                 />
               </div>
