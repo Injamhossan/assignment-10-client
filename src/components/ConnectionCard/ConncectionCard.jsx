@@ -1,6 +1,7 @@
 // src/components/ConnectionCard/ConncectionCard.jsx
 
 import React from 'react';
+import { toast } from 'react-toastify';
 import { Edit, Trash2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -21,8 +22,7 @@ const ConnectionCard = ({ partner, status = 'pending', sentDate = 'N/A', onCance
     return null; // Or a loading/error state
   }
 
-  const ConnectionCard = ({ partner, status = 'pending', sentDate = 'N/A', onCancelSuccess }) => {
-  const { cancelRequest } = useAuth(); 
+
 
   const handleCancel = async () => {
     if (window.confirm(`Are you sure you want to cancel your request to ${partner.name}?`)) {
