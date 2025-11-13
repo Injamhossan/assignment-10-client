@@ -127,13 +127,9 @@ export const AuthProvider = ({ children }) => {
       const data = await registerUser(userDataToSend); 
       await handleAuthResponse(data); 
       
-      // --- PORIBORTON: Duplicate toast remove kora hoyeche ---
-      // toast.success('Account created successfully!'); 
-      
       return userCredential.user;
     } catch (error) {
       const errorMessage = error.response?.data?.msg || error.message || 'Registration failed';
-      // --- PORIBORTON: Shudhu error toast-ti rakha hoyeche (jodi api.js fafail kore) ---
       if (!error.response) {
         toast.error(errorMessage);
       }
@@ -156,14 +152,10 @@ export const AuthProvider = ({ children }) => {
 
       const data = await loginUser(loginData); 
       await handleAuthResponse(data); 
-      
-      // --- PORIBORTON: Duplicate toast remove kora hoyeche ---
-      // toast.success('Login successful!'); 
 
       return userCredential.user;
     } catch (error) {
       const errorMessage = error.response?.data?.msg || error.message || 'Login failed';
-      // --- PORIBORTON: Shudhu error toast-ti rakha hoyeche ---
        if (!error.response) {
         toast.error(errorMessage);
       }
@@ -202,13 +194,9 @@ export const AuthProvider = ({ children }) => {
         }
       }
       
-      // --- PORIBORTON: Duplicate toast remove kora hoyeche ---
-      // toast.success('Google login successful!'); 
-      
       return userCredential.user;
     } catch (error) {
       const errorMessage = error.response?.data?.msg || error.message || 'Google login failed';
-      // --- PORIBORTON: Shudhu error toast-ti rakha hoyeche ---
        if (!error.response) {
         toast.error(errorMessage);
       }
@@ -223,7 +211,7 @@ export const AuthProvider = ({ children }) => {
       setUserData(null);
       setPartnerData(null); 
       localStorage.removeItem('token'); 
-      toast.success('Logged out successfully!'); // Eti rakha thik ache
+      toast.success('Logged out successfully!'); 
     } catch (error) {
       const errorMessage = error.message || 'Logout failed';
       toast.error(errorMessage);
@@ -260,12 +248,9 @@ export const AuthProvider = ({ children }) => {
         if (userDataFromForm.photoURL !== undefined) updatedFirebaseUser.photoURL = userDataFromForm.photoURL;
         setUser(updatedFirebaseUser);
         
-        // --- PORIBORTON: Duplicate toast remove kora hoyeche ---
-        // toast.success('Profile updated successfully!'); 
       }
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message || 'Profile update failed';
-      // --- PORIBORTON: Shudhu error toast-ti rakha hoyeche ---
        if (!error.response) {
         toast.error(errorMessage);
       }
@@ -284,7 +269,6 @@ export const AuthProvider = ({ children }) => {
       await deleteMyProfile(); 
       await deleteUser(currentUser);
 
-      // Eti rakha thik ache, karon api.js success toast dey na
       toast.success('Account deleted successfully.');
 
     } catch (error) {
@@ -296,7 +280,6 @@ export const AuthProvider = ({ children }) => {
         errorMessage = 'This is a sensitive operation. Please log out and log back in before deleting your account.';
       }
 
-      // --- PORIBORTON: Shudhu error toast-ti rakha hoyeche ---
        if (!error.response) {
          toast.error(errorMessage);
        }
@@ -331,6 +314,7 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
   };
+  // --- PORIBORTON SHESH ---
 
 
   const value = {

@@ -7,7 +7,7 @@ import ConnectionCard from '../../components/ConnectionCard/ConncectionCard';
 
 
 const MyConnections = () => {
-  const { user, userData, loading: authLoading } = useAuth(); //
+  const { user, userData, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   
   const [sentPartners, setSentPartners] = useState([]);
@@ -29,7 +29,7 @@ const MyConnections = () => {
       if (userData && userData.sentRequests && userData.sentRequests.length > 0) {
         try {
           const partnerDetailsPromises = userData.sentRequests.map(id => 
-            getPartnerById(id) //
+            getPartnerById(id)
           );
           
           const partners = await Promise.all(partnerDetailsPromises);
@@ -49,14 +49,23 @@ const MyConnections = () => {
 
     fetchSentPartnerDetails();
     
-    // user, userData, authLoading ba navigate change holei ei effect abar cholbe
   }, [user, userData, authLoading, navigate]);
 
+
+  // --- PORIBORTON: EI FUNCTION-TI ADD KORA HOYECHE ---
+  // Ei function-ti ConnectionCard theke call hobe ebong UI update korbe
+  const handleCancelSuccess = (cancelledPartnerId) => {
+    setSentPartners(prevPartners =>
+      prevPartners.filter(partner => partner._id !== cancelledPartnerId)
+    );
+  };
+  // --- PORIBORTON SHESH ---
+
+
   if (loading) {
-    return <PageLoader />; //
+    return <PageLoader />;
   }
 
-  // Jodi user login na thake (loading shesh howar por)
   if (!user) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900 py-12">
@@ -78,7 +87,6 @@ const MyConnections = () => {
     );
   }
 
-  // Notun UI (image_ea46c3.png onujayi)
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 transition-colors">
       <div className="container mx-auto px-4 max-w-4xl">
@@ -92,8 +100,6 @@ const MyConnections = () => {
             Manage your study partner requests and connections
           </p>
         </div>
-
-        {/* Ekhanei Bhabishyote "Accepted Connections" o dekhano jabe */}
         
         {/* Pending Sent Requests Section */}
         <div className="mt-8">
@@ -107,10 +113,11 @@ const MyConnections = () => {
                 <ConnectionCard
                   key={partner._id} 
                   partner={partner}
-                  // Ekhon shob "pending", kintu bhabishyote database theke status ashte pare
                   status="pending" 
-                  // Ekhonkar date, kintu bhabishyote request pathanor date database e save kora uchit
-                  sentDate={partner.createdAt || new Date().toISOString()} // Jodi partner-er 'createdAt' date thake
+                  sentDate={partner.createdAt || new Date().toISOString()}
+                  
+                  // --- PORIBORTON: EI PROP-TI PASS KORA HOYECHE ---
+                  onCancelSuccess={handleCancelSuccess}
                 />
               ))}
             </div>

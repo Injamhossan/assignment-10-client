@@ -1,7 +1,7 @@
 // src/components/ConnectionCard/ConncectionCard.jsx
 
 import React from 'react';
-import { toast } from 'react-toastify';
+import { toast } from 'react-toastify'; // Make sure this import is here
 import { Edit, Trash2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -22,25 +22,26 @@ const ConnectionCard = ({ partner, status = 'pending', sentDate = 'N/A', onCance
     return null; // Or a loading/error state
   }
 
-
-
   const handleCancel = async () => {
     if (window.confirm(`Are you sure you want to cancel your request to ${partner.name}?`)) {
       
-      const toastId = toastId.loading("Cancelling request..."); // লোডিং টোস্ট
+      // --- PORIBORTON (FIXED TYPO) ---
+      // VUL CHILO: const toastId = toastId.loading("Cancelling request...");
+      // THIK HOBE:
+      const toastId = toast.loading("Cancelling request..."); // Loading toast
 
       try {
         await cancelRequest(partner._id);
         
-        // সফল হলে প্যারেন্টকে জানাবে
+        // Shofol hole Parent component-ke janabe UI update korar jonno
         onCancelSuccess && onCancelSuccess(partner._id);
         
-        toast.success("Request successfully cancelled", { id: toastId }); // 2. সফল মেসেজ
+        toast.success("Request successfully cancelled", { id: toastId }); // Shofol message
 
       } catch (error) {
         console.error('Cancel request error:', error);
         
-        // 3. এরর মেসেজ দেখান
+        // Error message dekhan
         const errorMessage = error.response?.data?.message || "Failed to cancel request";
         toast.error(errorMessage, { id: toastId }); 
       }
