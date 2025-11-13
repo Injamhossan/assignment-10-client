@@ -1,10 +1,8 @@
+// src/services/api.js
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-// --- PORIBORTON 1: URL-ti thik kora hoyeche ---
-// Sesh-e '/api/' add kora hoyeche.
-const API_BASE_URL = 'https://assignment-10-server-ivory-eta.vercel.app/api/';
-
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://assignment-10-server-ivory-eta.vercel.app/api/';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -14,150 +12,116 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token'); 
+  const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
-});
+}, (err) => Promise.reject(err));
 
-
+// --- Auth / User ---
 export const registerUser = async (userData) => {
   try {
-        const response = await api.post('/auth/register', userData);
-    toast.success('Registration Successful!');
-    return response.data; 
+    const res = await api.post('/auth/register', userData);
+    toast.success('Registration successful!');
+    return res.data;
   } catch (error) {
-    
-    const errorMsg = error.response?.data?.msg || error.message;
-    console.error('Error registering user:', errorMsg);
-
-    if (errorMsg && (errorMsg.includes('Email already registered') || errorMsg.includes('already registered'))) {
-      // Kono toast dekhano hobe na
-    } else {
-      // Onno shob registration error-er jonno toast dekhano hobe
-      toast.error(errorMsg || 'Registration failed');
-    }
-    
-    throw error; // Error-ti pass kora hocche jate AuthContext eta catch korte pare
+    const msg = error.response?.data?.msg || error.message || 'Registration failed';
+    console.error('registerUser error:', msg);
+    if (!msg.includes('already registered')) toast.error(msg);
+    throw error;
   }
 };
-
 
 export const loginUser = async (loginData) => {
   try {
-    const response = await api.post('/auth/login', loginData);
-    toast.success('Login Successful!');
-    return response.data; // { token, user } return korbe
+    const res = await api.post('/auth/login', loginData);
+    toast.success('Login successful!');
+    return res.data;
   } catch (error) {
-    console.error('Error logging in:', error.response?.data?.msg || error.message);
-    toast.error(error.response?.data?.msg || 'Login failed');
+    const msg = error.response?.data?.msg || error.message || 'Login failed';
+    console.error('loginUser error:', msg);
+    toast.error(msg);
     throw error;
   }
 };
 
-/**
- * Logged in user er profile data token er maddhome ber kore.
- */
 export const getMyProfile = async () => {
   try {
-    const response = await api.get('/auth/me');
-    return response.data.user; // { user: {...} } return kore
+    const res = await api.get('/auth/me');
+    return res.data.user;
   } catch (error) {
-    console.error('Error fetching profile:', error.response?.data?.msg || error.message);
-    // Token expire hole ba kono problem hole error debe
+    console.error('getMyProfile error:', error.response?.data?.msg || error.message);
     throw error;
   }
 };
-
-// --- Partners Routes (Server er shathe match kora) ---
-
-/**
- * Shob partners der list ber kore
- */
-export const getPartners = async () => {
-  try {
-    const response = await api.get('/partners');
-    // Server er response structure onujayi data access
-    if (response.data && Array.isArray(response.data.data)) {
-      return response.data.data;
-    }
-    return []; // No data found
-  } catch (error) {
-    console.error('Error fetching partners:', error.response?.data?.msg || error.message);
-    toast.error(error.response?.data?.msg || 'Failed to fetch partners');
-    return [];
-  }
-};
-
-/**
- * Notun partner profile toiri kore
- */
-export const createPartner = async (partnerData) => {
-  try {
-    const response = await api.post('/partners', partnerData);
-    toast.success('Partner profile created successfully!');
-    return response.data; // { success: true, data: {...} } return korbe
-  } catch (error) {
-    console.error('Error creating partner:', error.response?.data?.msg || error.message);
-    toast.error(error.response?.data?.msg || 'Failed to create partner profile');
-    throw error;
-  }
-};
-
-/**
- * Existing partner profile update kore
- */
-export const updatePartnerProfile = async (partnerId, partnerData) => {
-  try {
-    const response = await api.put(`/partners/${partnerId}`, partnerData);
-    toast.success('Partner profile updated successfully!');
-    return response.data; // { success: true, data: {...} } return korbe
-  } catch (error) {
-    console.error('Error updating partner:', error.response?.data?.msg || error.message);
-    toast.error(error.response?.data?.msg || 'Failed to update partner profile');
-    throw error;
-  }
-};
-
 
 export const updateUserProfile = async (userData) => {
   try {
-    // userData object-e name, password, bio, etc. thakte pare
-    const response = await api.put('/auth/me', userData);
-    
-    toast.success(response.data.msg || 'Profile updated successfully!');
-    return response.data.user; // updated user object return korbe
+    const res = await api.put('/auth/me', userData);
+    toast.success(res.data.msg || 'Profile updated!');
+    return res.data.user;
   } catch (error) {
-    console.error('Error updating profile:', error.response?.data?.msg || error.message);
+    console.error('updateUserProfile error:', error.response?.data?.msg || error.message);
     toast.error(error.response?.data?.msg || 'Profile update failed');
     throw error;
   }
 };
 
-/**
- * Logged in user er profile MongoDB theke delete kore.
- */
 export const deleteMyProfile = async () => {
   try {
-    const response = await api.delete('/auth/me');
-    return response.data; // { msg: 'User deleted' } return korbe
+    const res = await api.delete('/auth/me');
+    return res.data;
   } catch (error) {
-    console.error('Error deleting profile from DB:', error.response?.data?.msg || error.message);
-    toast.error(error.response?.data?.msg || 'Failed to delete profile data');
+    console.error('deleteMyProfile error:', error.response?.data?.msg || error.message);
+    toast.error(error.response?.data?.msg || 'Failed to delete profile');
     throw error;
   }
 };
 
+// --- Partners ---
+export const getPartners = async () => {
+  try {
+    const res = await api.get('/partners');
+    if (res.data && Array.isArray(res.data.data)) return res.data.data;
+    return [];
+  } catch (error) {
+    console.error('getPartners error:', error.response?.data?.msg || error.message);
+    toast.error(error.response?.data?.msg || 'Failed to fetch partners');
+    return [];
+  }
+};
+
+export const createPartner = async (partnerData) => {
+  try {
+    const res = await api.post('/partners', partnerData);
+    toast.success('Partner created!');
+    return res.data;
+  } catch (error) {
+    console.error('createPartner error:', error.response?.data?.msg || error.message);
+    toast.error(error.response?.data?.msg || 'Failed to create partner');
+    throw error;
+  }
+};
+
+export const updatePartnerProfile = async (partnerId, partnerData) => {
+  try {
+    const res = await api.put(`/partners/${partnerId}`, partnerData);
+    toast.success('Partner updated!');
+    return res.data;
+  } catch (error) {
+    console.error('updatePartnerProfile error:', error.response?.data?.msg || error.message);
+    toast.error(error.response?.data?.msg || 'Failed to update partner');
+    throw error;
+  }
+};
 
 export const getPartnerById = async (id) => {
   try {
-    const response = await api.get(`/partners/${id}`);
-    if (response.data && response.data.data) {
-      return response.data.data; // Server 'data' object-er moddhe partner object-ti pathay
-    }
+    const res = await api.get(`/partners/${id}`);
+    return res.data.data;
   } catch (error) {
-    console.error('Error fetching partner by ID:', error.response?.data?.msg || error.message);
+    console.error('getPartnerById error:', error.response?.data?.msg || error.message);
     toast.error(error.response?.data?.msg || 'Failed to fetch partner');
     throw error;
   }
@@ -165,26 +129,29 @@ export const getPartnerById = async (id) => {
 
 export const sendConnectionRequest = async (partnerId) => {
   try {
-    const response = await api.post(`/auth/request/send/${partnerId}`);
-    toast.success(response.data.msg || 'Request Sent!');
-    return response.data;
+    const res = await api.post(`/auth/request/send/${partnerId}`);
+    toast.success(res.data.msg || 'Request sent!');
+    return res.data;
   } catch (error) {
-    console.error('Error sending request:', error.response?.data?.msg || error.message);
+    console.error('sendConnectionRequest error:', error.response?.data?.msg || error.message);
     toast.error(error.response?.data?.msg || 'Failed to send request');
     throw error;
   }
 };
 
-// --- PORIBORTON 2: Duplicate toast remove kora hoyeche ---
+/**
+ * cancelConnectionRequest matches your server route:
+ * DELETE /api/auth/request/cancel/:partnerId
+ */
 export const cancelConnectionRequest = async (partnerId) => {
   try {
-    const response = await api.post(`/auth/request/cancel/${partnerId}`);
-    // toast.success(response.data.msg || 'Request Cancelled!'); // <-- REMOVED
-    return response.data;
+    const res = await api.delete(`/auth/request/cancel/${partnerId}`);
+    // no toast here — caller (AuthContext) will show toast on success/err if desired
+    return res.data;
   } catch (error) {
-    console.error('Error cancelling request:', error.response?.data?.msg || error.message);
-    // toast.error(error.response?.data?.msg || 'Failed to cancel request'); // <-- REMOVED
-    throw error; // Error-ti pass kora hocche jate ConnectionCard eta handle korte pare
+    console.error('cancelConnectionRequest error:', error.response?.status, error.response?.data || error.message);
+    // bubble up the error so the caller can rollback UI
+    throw error;
   }
 };
 

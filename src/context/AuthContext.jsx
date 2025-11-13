@@ -1,27 +1,24 @@
 // src/context/AuthContext.jsx
-
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
-  signInWithPopup, 
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signInWithPopup,
   GoogleAuthProvider,
   signOut,
   onAuthStateChanged,
   updateProfile,
-  getIdToken, 
-  deleteUser 
+  getIdToken,
+  deleteUser
 } from 'firebase/auth';
 import { auth } from '../firebase/firebase.config';
 import { toast } from 'react-toastify';
-// Shob proyojonio function import korun
-import { 
-  registerUser, 
-  loginUser, 
-  getMyProfile, 
+import {
+  registerUser,
+  loginUser,
   updateUserProfile as apiUpdateUserProfile,
   deleteMyProfile,
-  sendConnectionRequest, 
+  sendConnectionRequest,
   cancelConnectionRequest,
   getPartners
 } from '../services/api';
@@ -29,298 +26,224 @@ import {
 const AuthContext = createContext();
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  return ctx;
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null); // firebase user
+  const [userData, setUserData] = useState(null); // app user from server (contains sentRequests etc)
+  const [partnerData, setPartnerData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [userData, setUserData] = useState(null); 
-  const [partnerData, setPartnerData] = useState(null); 
 
   const checkAndSetPartnerData = async (email) => {
-    if (!email) {
-      setPartnerData(null);
-      return;
-    }
+    if (!email) return setPartnerData(null);
     try {
-      const allPartners = await getPartners();
-      const myPartnerProfile = allPartners.find(p => p.email === email);
-      if (myPartnerProfile) {
-        setPartnerData(myPartnerProfile);
-      } else {
-        setPartnerData(null);
-      }
+      const all = await getPartners();
+      const me = all.find(p => p.email === email) || null;
+      setPartnerData(me);
     } catch (err) {
-      console.error("Failed to fetch partner profile", err);
+      console.error('checkAndSetPartnerData error:', err);
       setPartnerData(null);
     }
   };
 
-
-  const handleAuthResponse = async (data) => {
-    if (data.token) {
-      localStorage.setItem('token', data.token); 
+  const handleAuthResponse = useCallback(async (data) => {
+    if (data?.token) localStorage.setItem('token', data.token);
+    if (data?.user) {
+      setUserData(data.user);
+      await checkAndSetPartnerData(data.user.email);
     }
-    if (data.user) {
-      setUserData(data.user); 
-      await checkAndSetPartnerData(data.user.email); 
-    }
-  };
+  }, []);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    const unsub = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        setUser(currentUser); 
-        
+        setUser(currentUser);
         try {
           const firebaseToken = await getIdToken(currentUser, true);
-          
-          const loginData = { 
-            email: currentUser.email,
-            firebaseToken: firebaseToken 
-          };
-          
-          const data = await loginUser(loginData); 
-          await handleAuthResponse(data); 
-          
-        } catch (error) {
-          console.error('onAuthStateChanged error (maybe user not in DB yet):', error.message);
-          if (error.response && error.response.status === 404) {
-             console.log("User not in DB. Google Sign In will handle registration.");
+          const data = await loginUser({ email: currentUser.email, firebaseToken });
+          await handleAuthResponse(data);
+        } catch (err) {
+          console.error('onAuthStateChanged loginUser error:', err?.message || err);
+          if (err.response?.status === 404) {
+            // user not in DB yet — may be created on Google sign-in etc.
+            console.log('User not in DB yet.');
           } else {
-            console.error('Failed to auto-login to server, logging out.');
             await signOut(auth);
           }
         }
       } else {
         setUser(null);
         setUserData(null);
-        setPartnerData(null); 
-        localStorage.removeItem('token'); 
+        setPartnerData(null);
+        localStorage.removeItem('token');
       }
       setLoading(false);
     });
 
-    return () => unsubscribe();
-  }, []);
+    return () => unsub();
+  }, [handleAuthResponse]);
 
-  // Register with email and password
+  // register/login/logout/update/delete omitted for brevity but expected to be same as earlier
+  // I'll include register/login/logout/updateUserProfile/deleteAccount/sendRequest/cancelRequest
+
   const register = async (email, password, name) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName: name });
-      
       const firebaseToken = await getIdToken(userCredential.user);
-
-      const userDataToSend = {
-        name: name,
-        email: email,
-        password: password, 
-        firebaseToken: firebaseToken
-      };
-      
-      const data = await registerUser(userDataToSend); 
-      await handleAuthResponse(data); 
-      
+      const data = await registerUser({ name, email, password, firebaseToken });
+      await handleAuthResponse(data);
       return userCredential.user;
     } catch (error) {
-      const errorMessage = error.response?.data?.msg || error.message || 'Registration failed';
-      if (!error.response) {
-        toast.error(errorMessage);
-      }
+      const msg = error.response?.data?.msg || error.message || 'Registration failed';
+      if (!error.response) toast.error(msg);
       throw error;
     }
   };
 
-  // Login with email and password
   const login = async (email, password) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      
       const firebaseToken = await getIdToken(userCredential.user);
-
-      const loginData = {
-        email: email,
-        password: password, 
-        firebaseToken: firebaseToken
-      };
-
-      const data = await loginUser(loginData); 
-      await handleAuthResponse(data); 
-
+      const data = await loginUser({ email, password, firebaseToken });
+      await handleAuthResponse(data);
       return userCredential.user;
     } catch (error) {
-      const errorMessage = error.response?.data?.msg || error.message || 'Login failed';
-       if (!error.response) {
-        toast.error(errorMessage);
-      }
+      const msg = error.response?.data?.msg || error.message || 'Login failed';
+      if (!error.response) toast.error(msg);
       throw error;
     }
   };
 
-  // Google Sign In
   const googleSignIn = async () => {
     try {
       const provider = new GoogleAuthProvider();
       const userCredential = await signInWithPopup(auth, provider);
-      
       const firebaseToken = await getIdToken(userCredential.user);
-      
-      const userDataToSend = {
+      const payload = {
         name: userCredential.user.displayName,
         email: userCredential.user.email,
-        firebaseToken: firebaseToken
+        firebaseToken
       };
-      
       try {
-        const data = await registerUser(userDataToSend);
-        await handleAuthResponse(data); 
-      } catch (error) {
-        if (error.response && (error.response.status === 400 || error.response.status === 409)) {
-          console.log('User already in DB, logging in...');
-          const loginData = {
-            email: userCredential.user.email,
-            firebaseToken: firebaseToken
-          };
-          const data = await loginUser(loginData);
-          await handleAuthResponse(data); 
+        const data = await registerUser(payload);
+        await handleAuthResponse(data);
+      } catch (err) {
+        if (err.response && (err.response.status === 400 || err.response.status === 409)) {
+          const data = await loginUser({ email: payload.email, firebaseToken });
+          await handleAuthResponse(data);
         } else {
-          throw error; 
+          throw err;
         }
       }
-      
       return userCredential.user;
     } catch (error) {
-      const errorMessage = error.response?.data?.msg || error.message || 'Google login failed';
-       if (!error.response) {
-        toast.error(errorMessage);
-      }
+      const msg = error.response?.data?.msg || error.message || 'Google login failed';
+      if (!error.response) toast.error(msg);
       throw error;
     }
   };
 
-  // Logout
   const logout = async () => {
     try {
       await signOut(auth);
       setUserData(null);
-      setPartnerData(null); 
-      localStorage.removeItem('token'); 
-      toast.success('Logged out successfully!'); 
-    } catch (error) {
-      const errorMessage = error.message || 'Logout failed';
-      toast.error(errorMessage);
-      throw error;
+      setPartnerData(null);
+      localStorage.removeItem('token');
+      toast.success('Logged out');
+    } catch (err) {
+      toast.error(err.message || 'Logout failed');
+      throw err;
     }
   };
 
-  // Update user profile
-  const updateUserProfile = async (userDataFromForm) => {
+  const updateUserProfile = async (formData) => {
     try {
       if (auth.currentUser) {
-        // Update Firebase profile
         const firebaseUpdate = {};
-        if (userDataFromForm.name) {
-          firebaseUpdate.displayName = userDataFromForm.name;
-        }
-        if (userDataFromForm.photoURL !== undefined) {
-          firebaseUpdate.photoURL = userDataFromForm.photoURL;
-        }
-        
+        if (formData.name) firebaseUpdate.displayName = formData.name;
+        if (formData.photoURL !== undefined) firebaseUpdate.photoURL = formData.photoURL;
         if (Object.keys(firebaseUpdate).length > 0) {
           await updateProfile(auth.currentUser, firebaseUpdate);
         }
-        
-        // Update in MongoDB
-        const updatedMongoUser = await apiUpdateUserProfile(userDataFromForm); 
-        
-        // Update local state
-        setUserData(updatedMongoUser); 
-        
-        // Update Firebase user object in state
+        const updated = await apiUpdateUserProfile(formData);
+        setUserData(updated);
         const updatedFirebaseUser = { ...auth.currentUser };
-        if (userDataFromForm.name) updatedFirebaseUser.displayName = userDataFromForm.name;
-        if (userDataFromForm.photoURL !== undefined) updatedFirebaseUser.photoURL = userDataFromForm.photoURL;
+        if (formData.name) updatedFirebaseUser.displayName = formData.name;
+        if (formData.photoURL !== undefined) updatedFirebaseUser.photoURL = formData.photoURL;
         setUser(updatedFirebaseUser);
-        
       }
-    } catch (error) {
-      const errorMessage = error.response?.data?.message || error.message || 'Profile update failed';
-       if (!error.response) {
-        toast.error(errorMessage);
-      }
-      throw error;
+    } catch (err) {
+      const msg = err.response?.data?.msg || err.message || 'Profile update failed';
+      if (!err.response) toast.error(msg);
+      throw err;
     }
   };
 
-  // Delete user account
   const deleteAccount = async () => {
     try {
       const currentUser = auth.currentUser;
-      if (!currentUser) {
-        throw new Error('No user is currently logged in.');
-      }
-
-      await deleteMyProfile(); 
+      if (!currentUser) throw new Error('No user logged in');
+      await deleteMyProfile();
       await deleteUser(currentUser);
-
-      toast.success('Account deleted successfully.');
-
-    } catch (error) {
-      console.error('Error deleting account:', error);
-      
-      let errorMessage = error.response?.data?.msg || error.message || 'Failed to delete account.';
-
-      if (error.code === 'auth/requires-recent-login') {
-        errorMessage = 'This is a sensitive operation. Please log out and log back in before deleting your account.';
+      toast.success('Account deleted');
+    } catch (err) {
+      console.error('deleteAccount error:', err);
+      const msg = err.response?.data?.msg || err.message || 'Failed to delete account';
+      if (err.code === 'auth/requires-recent-login') {
+        toast.error('Please re-login before deleting account (recent login required).');
+      } else {
+        toast.error(msg);
       }
-
-       if (!error.response) {
-         toast.error(errorMessage);
-       }
-      throw error; 
+      throw err;
     }
   };
 
   const sendRequest = async (partnerId) => {
     try {
       await sendConnectionRequest(partnerId);
-      setUserData(prevData => ({
-        ...prevData,
-        sentRequests: [...(prevData.sentRequests || []), partnerId]
+      setUserData(prev => ({
+        ...prev,
+        sentRequests: [...(prev?.sentRequests || []), partnerId]
       }));
-    } catch (error) {
-      // api.js theke toast ashbe
+    } catch (err) {
+      console.error('sendRequest error:', err);
+      throw err;
     }
   };
 
-  // --- SUDHU EI FUNCTION-TI PORIBORTON KORA HOYECHE ---
+  // CANCEL: optimistic update + rollback (matches server route DELETE /auth/request/cancel/:partnerId)
   const cancelRequest = async (partnerId) => {
+    if (!partnerId) throw new Error('partnerId required');
+
+    const prevSent = userData?.sentRequests ? [...userData.sentRequests] : [];
+
+    // optimistic update
+    setUserData(prev => {
+      if (!prev) return prev;
+      return { ...prev, sentRequests: (prev.sentRequests || []).filter(id => id !== partnerId) };
+    });
+
     try {
-      await cancelConnectionRequest(partnerId);
-      setUserData(prevData => ({
-        ...prevData,
-        sentRequests: (prevData.sentRequests || []).filter(id => id !== partnerId)
-      }));
-    } catch (error) {
-      console.log (error);
-      // --- PORIBORTON ---
-      // Error-ti ConnectionCard-ke pathiye din jate sheta error toast dekhate pare
-      throw error;
+      await cancelConnectionRequest(partnerId); // hits DELETE /auth/request/cancel/:partnerId
+      toast.success('Cancelled request');
+    } catch (err) {
+      console.error('cancelRequest error, rolling back:', err);
+      // rollback
+      setUserData(prev => ({ ...prev, sentRequests: prevSent }));
+      const serverMsg = err.response?.data?.msg || err.message || 'Failed to cancel request';
+      toast.error(serverMsg);
+      throw err;
     }
   };
-  // --- PORIBORTON SHESH ---
-
 
   const value = {
     user,
     userData,
-    partnerData, 
+    partnerData,
     loading,
     register,
     login,
@@ -328,9 +251,9 @@ export const AuthProvider = ({ children }) => {
     logout,
     updateUserProfile,
     deleteAccount,
-    sendRequest, 
+    sendRequest,
     cancelRequest,
-    checkAndSetPartnerData 
+    checkAndSetPartnerData
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
