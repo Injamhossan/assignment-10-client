@@ -16,16 +16,33 @@ const getInitials = (name) => {
 const ConnectionCard = ({ partner, status = 'pending', sentDate = 'N/A', onCancelSuccess }) => {
   const { cancelRequest } = useAuth(); 
 
+  // Guard clause to prevent rendering if partner data is missing
+  if (!partner) {
+    return null; // Or a loading/error state
+  }
+
+  const ConnectionCard = ({ partner, status = 'pending', sentDate = 'N/A', onCancelSuccess }) => {
+  const { cancelRequest } = useAuth(); 
+
   const handleCancel = async () => {
     if (window.confirm(`Are you sure you want to cancel your request to ${partner.name}?`)) {
+      
+      const toastId = toastId.loading("Cancelling request..."); // লোডিং টোস্ট
+
       try {
         await cancelRequest(partner._id);
-        // Successfully cancelled, now notify the parent component to update the UI
+        
+        // সফল হলে প্যারেন্টকে জানাবে
         onCancelSuccess && onCancelSuccess(partner._id);
-      
+        
+        toast.success("Request successfully cancelled", { id: toastId }); // 2. সফল মেসেজ
+
       } catch (error) {
-  
         console.error('Cancel request error:', error);
+        
+        // 3. এরর মেসেজ দেখান
+        const errorMessage = error.response?.data?.message || "Failed to cancel request";
+        toast.error(errorMessage, { id: toastId }); 
       }
     }
   };
