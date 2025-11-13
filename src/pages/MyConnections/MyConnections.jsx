@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PageLoader from '../../components/Spinner/PageLoader';
 import { useAuth } from '../../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { getPartnerById } from '../../services/api'; // Partner details fetch korar jonno
+import { getPartnerById } from '../../services/api'; 
 import ConnectionCard from '../../components/ConnectionCard/ConncectionCard';
 
 
@@ -14,7 +14,6 @@ const MyConnections = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Shudhu auth load howar jonno wait korbo na, data fetch korar jonno o korbo
     if (authLoading) {
       setLoading(true);
       return;
@@ -27,18 +26,14 @@ const MyConnections = () => {
     }
 
     const fetchSentPartnerDetails = async () => {
-      // userData load howar por check korbe sentRequests ache kina
       if (userData && userData.sentRequests && userData.sentRequests.length > 0) {
         try {
-          // Prottek-ti ID-r jonno API call korar promise toiri kora
           const partnerDetailsPromises = userData.sentRequests.map(id => 
             getPartnerById(id) //
           );
           
-          // Shob promise ekshathe execute kora
           const partners = await Promise.all(partnerDetailsPromises);
           
-          // Kono partner delete hoye gele 'null' result ashte pare, shegulo baad deya
           const validPartners = partners.filter(p => p); 
           
           setSentPartners(validPartners);

@@ -3,10 +3,7 @@
 import React from 'react';
 import { Edit, Trash2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-// --- PORIBORTON: toast import er dorkar nei ---
-// import { toast } from 'react-toastify'; 
 
-// Helper function
 const getInitials = (name) => {
   if (!name) return 'S';
   const names = name.split(' ');
@@ -16,23 +13,18 @@ const getInitials = (name) => {
   return name[0].toUpperCase();
 };
 
-const ConnectionCard = ({ partner, status = 'pending', sentDate = 'N/A' }) => {
+const ConnectionCard = ({ partner, status = 'pending', sentDate = 'N/A', onCancelSuccess }) => {
   const { cancelRequest } = useAuth(); 
 
   const handleCancel = async () => {
     if (window.confirm(`Are you sure you want to cancel your request to ${partner.name}?`)) {
       try {
         await cancelRequest(partner._id);
-        
-        // --- PORIBORTON: Duplicate toast remove kora hoyeche ---
-        // toast.success('Request cancelled'); 
+        // Successfully cancelled, now notify the parent component to update the UI
+        onCancelSuccess && onCancelSuccess(partner._id);
       
       } catch (error) {
-        
-        // --- PORIBORTON: Duplicate toast remove kora hoyeche ---
-        // toast.error('Failed to cancel request'); 
-        
-        // Error-ti console e dekha jete pare, kintu toast api.js thekei ashbe
+  
         console.error('Cancel request error:', error);
       }
     }
@@ -78,14 +70,6 @@ const ConnectionCard = ({ partner, status = 'pending', sentDate = 'N/A' }) => {
 
       {/* Action Buttons */}
       <div className="flex items-center gap-3">
-        {/* Edit Button */}
-        <button 
-          title="Edit"
-          className="p-2 rounded-md text-cyan-600 bg-cyan-100 hover:bg-cyan-200 dark:bg-cyan-900 dark:text-cyan-300 dark:hover:bg-cyan-800 transition-colors"
-          disabled 
-        >
-          <Edit className="w-4 h-4" />
-        </button>
         
         {/* Delete/Cancel Button */}
         <button 
