@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
+// --- PORIBORTON 1: URL-ti thik kora hoyeche ---
+// Sesh-e '/api/' add kora hoyeche.
 const API_BASE_URL = 'https://assignment-10-server-ivory-eta.vercel.app/api/';
 
 
@@ -37,8 +39,6 @@ export const registerUser = async (userData) => {
       toast.error(errorMsg || 'Registration failed');
     }
     
-    // --- PORIBORTON END ---
-
     throw error; // Error-ti pass kora hocche jate AuthContext eta catch korte pare
   }
 };
@@ -58,7 +58,6 @@ export const loginUser = async (loginData) => {
 
 /**
  * Logged in user er profile data token er maddhome ber kore.
- * Server e '/api/auth/me' route ache, '/api/users/:uid' nei.
  */
 export const getMyProfile = async () => {
   try {
@@ -106,7 +105,6 @@ export const createPartner = async (partnerData) => {
   }
 };
 
-// --- NOTUN FUNCTION (START) ---
 /**
  * Existing partner profile update kore
  */
@@ -121,7 +119,7 @@ export const updatePartnerProfile = async (partnerId, partnerData) => {
     throw error;
   }
 };
-// --- NOTUN FUNCTION (END) ---
+
 
 export const updateUserProfile = async (userData) => {
   try {
@@ -139,7 +137,6 @@ export const updateUserProfile = async (userData) => {
 
 /**
  * Logged in user er profile MongoDB theke delete kore.
- * Server e '/api/auth/me' route e DELETE request pathay.
  */
 export const deleteMyProfile = async () => {
   try {
@@ -178,18 +175,16 @@ export const sendConnectionRequest = async (partnerId) => {
   }
 };
 
-/**
- * Pathano request cancel kore
- */
+// --- PORIBORTON 2: Duplicate toast remove kora hoyeche ---
 export const cancelConnectionRequest = async (partnerId) => {
   try {
     const response = await api.post(`/auth/request/cancel/${partnerId}`);
-    toast.success(response.data.msg || 'Request Cancelled!');
+    // toast.success(response.data.msg || 'Request Cancelled!'); // <-- REMOVED
     return response.data;
   } catch (error) {
     console.error('Error cancelling request:', error.response?.data?.msg || error.message);
-    toast.error(error.response?.data?.msg || 'Failed to cancel request');
-    throw error;
+    // toast.error(error.response?.data?.msg || 'Failed to cancel request'); // <-- REMOVED
+    throw error; // Error-ti pass kora hocche jate ConnectionCard eta handle korte pare
   }
 };
 

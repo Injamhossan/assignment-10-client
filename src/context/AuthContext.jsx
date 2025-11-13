@@ -316,6 +316,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // --- SUDHU EI FUNCTION-TI PORIBORTON KORA HOYECHE ---
   const cancelRequest = async (partnerId) => {
     try {
       await cancelConnectionRequest(partnerId);
@@ -325,6 +326,9 @@ export const AuthProvider = ({ children }) => {
       }));
     } catch (error) {
       console.log (error);
+      // --- PORIBORTON ---
+      // Error-ti ConnectionCard-ke pathiye din jate sheta error toast dekhate pare
+      throw error;
     }
   };
 
