@@ -1,7 +1,23 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://assignment-10-server-ivory-eta.vercel.app/api/';
+// Base URLs according to documentation
+// Local: http://localhost:5000
+// Production: https://assignment-10-server-ivory-eta.vercel.app
+const getBaseURL = () => {
+  const envURL = import.meta.env.VITE_API_BASE_URL;
+  if (envURL) {
+    // If env URL is provided, ensure it doesn't have trailing slash
+    return envURL.endsWith('/') ? envURL.slice(0, -1) : envURL;
+  }
+  // Default to production URL
+  return 'https://assignment-10-server-ivory-eta.vercel.app';
+};
+
+const API_BASE_URL = getBaseURL();
+
+// Debug: Check which API URL is being used
+console.log('🔍 API Base URL:', API_BASE_URL);
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -15,13 +31,16 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  // Debug: Log full request URL
+  const fullUrl = config.baseURL + config.url;
+  console.log('🌐 API Request:', config.method?.toUpperCase(), fullUrl);
   return config;
 }, (err) => Promise.reject(err));
 
 
 export const registerUser = async (userData) => {
   try {
-    const res = await api.post('/auth/register', userData);
+    const res = await api.post('/api/auth/register', userData);
     toast.success('Registration successful!');
     return res.data;
   } catch (error) {
@@ -34,7 +53,7 @@ export const registerUser = async (userData) => {
 
 export const loginUser = async (loginData) => {
   try {
-    const res = await api.post('/auth/login', loginData);
+    const res = await api.post('/api/auth/login', loginData);
     toast.success('Login successful!');
     return res.data;
   } catch (error) {
@@ -47,8 +66,10 @@ export const loginUser = async (loginData) => {
 
 export const getMyProfile = async () => {
   try {
-    const res = await api.get('/auth/me');
-    return res.data.user;
+    const res = await api.get('/api/auth/me');
+    // According to documentation, response is directly the user object
+    // But some APIs might wrap it in { user: {...} }, so handle both cases
+    return res.data.user || res.data;
   } catch (error) {
     console.error('getMyProfile error:', error.response?.data?.msg || error.message);
     throw error;
@@ -57,7 +78,7 @@ export const getMyProfile = async () => {
 
 export const updateUserProfile = async (userData) => {
   try {
-    const res = await api.put('/auth/me', userData);
+    const res = await api.put('/api/auth/me', userData);
     toast.success(res.data.msg || 'Profile updated!');
     return res.data.user;
   } catch (error) {
@@ -69,7 +90,7 @@ export const updateUserProfile = async (userData) => {
 
 export const deleteMyProfile = async () => {
   try {
-    const res = await api.delete('/auth/me');
+    const res = await api.delete('/api/auth/me');
     return res.data;
   } catch (error) {
     console.error('deleteMyProfile error:', error.response?.data?.msg || error.message);
@@ -81,7 +102,7 @@ export const deleteMyProfile = async () => {
 // --- Partners ---
 export const getPartners = async () => {
   try {
-    const res = await api.get('/partners');
+    const res = await api.get('/api/partners');
     if (res.data && Array.isArray(res.data.data)) return res.data.data;
     return [];
   } catch (error) {
@@ -93,8 +114,8 @@ export const getPartners = async () => {
 
 export const createPartner = async (partnerData) => {
   try {
-    const res = await api.post('/partners', partnerData);
-    toast.success('Partner created!');
+    const res = await api.post('/api/partners', partnerData);
+    toast.success(res.data.msg || 'Partner created!');
     return res.data;
   } catch (error) {
     console.error('createPartner error:', error.response?.data?.msg || error.message);
@@ -105,8 +126,8 @@ export const createPartner = async (partnerData) => {
 
 export const updatePartnerProfile = async (partnerId, partnerData) => {
   try {
-    const res = await api.put(`/partners/${partnerId}`, partnerData);
-    toast.success('Partner updated!');
+    const res = await api.put(`/api/partners/${partnerId}`, partnerData);
+    toast.success(res.data.msg || 'Partner updated!');
     return res.data;
   } catch (error) {
     console.error('updatePartnerProfile error:', error.response?.data?.msg || error.message);
@@ -117,7 +138,7 @@ export const updatePartnerProfile = async (partnerId, partnerData) => {
 
 export const getPartnerById = async (id) => {
   try {
-    const res = await api.get(`/partners/${id}`);
+    const res = await api.get(`/api/partners/${id}`);
     return res.data.data;
   } catch (error) {
     console.error('getPartnerById error:', error.response?.data?.msg || error.message);
@@ -128,23 +149,38 @@ export const getPartnerById = async (id) => {
 
 export const sendConnectionRequest = async (partnerId) => {
   try {
-    const res = await api.post(`/auth/request/send/${partnerId}`);
+    const res = await api.post(`/api/auth/request/send/${partnerId}`);
     toast.success(res.data.msg || 'Request sent!');
     return res.data;
   } catch (error) {
     console.error('sendConnectionRequest error:', error.response?.data?.msg || error.message);
-    toast.error(error.response?.data?.msg || 'Failed to send request');
+    const errorMsg = error.response?.data?.msg || error.message || 'Failed to send request';
+    toast.error(errorMsg);
     throw error;
   }
 };
 
 export const cancelConnectionRequest = async (partnerId) => {
   try {
-    const res = await api.delete(`/auth/request/cancel/${partnerId}`);
-        return res.data;
+    const res = await api.delete(`/api/auth/request/cancel/${partnerId}`);
+    toast.success(res.data.msg || 'Request cancelled successfully');
+    return res.data;
   } catch (error) {
     console.error('cancelConnectionRequest error:', error.response?.status, error.response?.data || error.message);
-    
+    const errorMsg = error.response?.data?.msg || error.message || 'Failed to cancel request';
+    toast.error(errorMsg);
+    throw error;
+  }
+};
+
+// Get all requests (sent & received)
+export const getRequests = async (type = 'all') => {
+  try {
+    const res = await api.get(`/api/auth/requests?type=${type}`);
+    return res.data;
+  } catch (error) {
+    console.error('getRequests error:', error.response?.data?.msg || error.message);
+    toast.error(error.response?.data?.msg || 'Failed to fetch requests');
     throw error;
   }
 };

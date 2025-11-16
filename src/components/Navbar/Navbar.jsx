@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Sun, Moon, LogOut, User } from "lucide-react";
+import { Sun, Moon, LogOut, User, ChevronDown } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
 import NavLogo from "../../assets/StudyMate.png";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const menuRef = useRef(null);
+  const profileDropdownRef = useRef(null);
   const { theme, toggleTheme } = useTheme();
   const { user, logout, partnerData, loading } = useAuth();
   const navigate = useNavigate();
@@ -17,6 +19,7 @@ const Navbar = () => {
       await logout();
       navigate('/');
       setOpen(false);
+      setProfileDropdownOpen(false);
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -30,6 +33,15 @@ const Navbar = () => {
     if (open) document.addEventListener("mousedown", onDocClick);
     return () => document.removeEventListener("mousedown", onDocClick);
   }, [open]);
+
+  useEffect(() => {
+    const onDocClick = (e) => {
+      if (!profileDropdownRef.current) return;
+      if (!profileDropdownRef.current.contains(e.target)) setProfileDropdownOpen(false);
+    };
+    if (profileDropdownOpen) document.addEventListener("mousedown", onDocClick);
+    return () => document.removeEventListener("mousedown", onDocClick);
+  }, [profileDropdownOpen]);
 
   // --- LINKS LOGIC PORIBORTON (START) ---
   const links = [
@@ -88,25 +100,46 @@ const Navbar = () => {
             {/* Desktop auth buttons */}
             <div className="hidden lg:flex lg:items-center lg:gap-3">
               {user ? (
-                <>
-                  <Link to="/myprofile" className="flex items-center gap-2 px-4 py-2 text-[#300A91] dark:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                <div className="relative" ref={profileDropdownRef}>
+                  <button
+                    onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                    className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-400"
+                  >
                     {user.photoURL ? (
-                      <img src={user.photoURL} alt={user.displayName || 'User'} className="w-8 h-8 rounded-full" />
+                      <img 
+                        src={user.photoURL} 
+                        alt={user.displayName || 'User'} 
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
                     ) : (
                       <div className="w-8 h-8 rounded-full bg-[#300A91] dark:bg-purple-600 flex items-center justify-center">
                         <User className="w-4 h-4 text-white" />
                       </div>
                     )}
-                    <span className="font-semibold">{user.displayName || 'Profile'}</span>
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="btn bg-red-600 dark:bg-red-700 rounded-[50px] px-4 py-1 text-white hover:bg-red-700 dark:hover:bg-red-800 transition-colors flex items-center gap-2"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Logout
+                    <ChevronDown className={`w-4 h-4 text-gray-600 dark:text-gray-300 transition-transform ${profileDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
-                </>
+                  
+                  {/* Profile Dropdown */}
+                  {profileDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-lg z-50 border border-gray-200 dark:border-gray-700 overflow-hidden">
+                      <Link
+                        to="/myprofile"
+                        onClick={() => setProfileDropdownOpen(false)}
+                        className="flex items-center gap-2 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      >
+                        <User className="w-4 h-4" />
+                        <span>Profile</span>
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left flex items-center gap-2 px-4 py-3 text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        <span>Logout</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
               ) : (
                 <>
                   <Link to="/login" className="btn bg-[#300A91] dark:bg-purple-600 rounded-[50px] px-4 py-1 text-white hover:bg-[#3C0AA4] dark:hover:bg-purple-700 transition-colors">

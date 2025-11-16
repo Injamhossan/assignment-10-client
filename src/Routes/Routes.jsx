@@ -1,5 +1,5 @@
 import React from 'react';
-import { createBrowserRouter } from 'react-router';
+import { createBrowserRouter } from 'react-router-dom';
 import Root from '../Root/Root';
 import Home from '../pages/Home/Home';
 import FindPartners from '../pages/FindPartners/FindPartners';

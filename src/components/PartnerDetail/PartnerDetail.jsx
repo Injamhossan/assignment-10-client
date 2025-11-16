@@ -69,23 +69,51 @@ const PartnerDetail = () => {
 
 
   // --- HANLDER UPDATE (START) ---
-  const handleSendRequest = (e) => {
+  const handleSendRequest = async (e) => {
     e.preventDefault();
     if (!user) {
       toast.error('Please log in to send a request.');
       navigate('/login');
       return;
     }
-    sendRequest(id); // 'id' hocche partner-er _id from URL
+    
+    if (!partner || !partner._id) {
+      toast.error('Partner information not available.');
+      return;
+    }
+    
+    try {
+      // Use partner._id to ensure we have the correct MongoDB ObjectId
+      await sendRequest(partner._id);
+      // Update hasSentRequest state after successful send
+      setHasSentRequest(true);
+    } catch (error) {
+      // Error is already handled in sendRequest/sendConnectionRequest
+      console.error('Failed to send request:', error);
+    }
   };
 
-  const handleCancelRequest = (e) => {
+  const handleCancelRequest = async (e) => {
     e.preventDefault();
     if (!user) {
       toast.error('Please log in');
       return;
     }
-    cancelRequest(id);
+    
+    if (!partner || !partner._id) {
+      toast.error('Partner information not available.');
+      return;
+    }
+    
+    try {
+      // Use partner._id to ensure we have the correct MongoDB ObjectId
+      await cancelRequest(partner._id);
+      // Update hasSentRequest state after successful cancel
+      setHasSentRequest(false);
+    } catch (error) {
+      // Error is already handled in cancelRequest
+      console.error('Failed to cancel request:', error);
+    }
   };
   // --- HANLDER UPDATE (END) ---
 

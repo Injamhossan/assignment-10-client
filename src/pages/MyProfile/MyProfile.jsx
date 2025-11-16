@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { User, Mail, Save, Edit2, X, Trash2 } from 'lucide-react'; 
 import PageLoader from '../../components/Spinner/PageLoader';
 import { useAuth } from '../../context/AuthContext';
-import { getMyProfile } from '../../services/api'; 
+import { getMyProfile } from '../../services/api';
+import { toast } from 'react-toastify'; 
 
 const MyProfile = () => {
   const [loading, setLoading] = useState(true);
@@ -85,9 +86,31 @@ const MyProfile = () => {
     setFormLoading(true);
     try {
       await updateUserProfile(formData);
+      
+      // Refetch updated user data from MongoDB
+      try {
+        const updatedData = await getMyProfile();
+        setDbUserData(updatedData);
+        setFormData({
+          name: updatedData.name || user?.displayName || '',
+          email: updatedData.email || user?.email || '',
+          photoURL: updatedData.photoURL || user?.photoURL || '',
+          bio: updatedData.bio || '',
+          phone: updatedData.phone || '',
+          location: updatedData.location || '',
+          interests: updatedData.interests || '',
+          education: updatedData.education || '',
+        });
+      } catch (fetchError) {
+        console.error('Error fetching updated profile:', fetchError);
+        // Still show success even if refetch fails
+      }
+      
       setIsEditing(false);
+      // Success toast is shown by apiUpdateUserProfile
     } catch (error) {
       console.error('Error updating profile:', error);
+      // Error toast is handled in updateUserProfile
     } finally {
       setFormLoading(false);
     }
@@ -192,7 +215,22 @@ const MyProfile = () => {
                   <>
                     <button
                       type="button"
-                      onClick={() => setIsEditing(true)}
+                      onClick={() => {
+                        // Ensure form is pre-filled with latest data when entering edit mode
+                        if (dbUserData) {
+                          setFormData({
+                            name: dbUserData.name || user?.displayName || '',
+                            email: dbUserData.email || user?.email || '',
+                            photoURL: dbUserData.photoURL || user?.photoURL || '',
+                            bio: dbUserData.bio || '',
+                            phone: dbUserData.phone || '',
+                            location: dbUserData.location || '',
+                            interests: dbUserData.interests || '',
+                            education: dbUserData.education || '',
+                          });
+                        }
+                        setIsEditing(true);
+                      }}
                       disabled={formLoading}
                       className="w-full sm:w-auto px-4 py-2 bg-[#300A91] dark:bg-purple-600 text-white rounded-lg hover:bg-[#3C0AA4] dark:hover:bg-purple-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                     >

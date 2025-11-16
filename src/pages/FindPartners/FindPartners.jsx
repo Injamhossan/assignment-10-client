@@ -11,6 +11,17 @@ const FindPartners = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortCriteria, setSortCriteria] = useState('rating-desc');
 
+  // Helper function to get experience level order for sorting
+  const getLevelOrder = (level) => {
+    const levelMap = {
+      'Beginner': 1,
+      'Intermediate': 2,
+      'Advanced': 3,
+      'Expert': 4
+    };
+    return levelMap[level] || 0;
+  };
+
   useEffect(() => {
     const fetchPartners = async () => {
       try {
@@ -37,16 +48,8 @@ const FindPartners = () => {
     if (searchTerm.trim() !== '') {
       const searchLower = searchTerm.toLowerCase();
       processedPartners = processedPartners.filter(partner => {
-       
-        return (
-          partner.name?.toLowerCase().includes(searchLower) ||
-          partner.location?.toLowerCase().includes(searchLower) ||
-          (partner.education?.toLowerCase().includes(searchLower)) || 
-          (partner.interests?.toLowerCase().includes(searchLower)) || 
-          (partner.bio?.toLowerCase().includes(searchLower)) || 
-          partner.subject?.toLowerCase().includes(searchLower) || 
-          partner.level?.toLowerCase().includes(searchLower) 
-        );
+        // Search specifically by Subject
+        return partner.subject?.toLowerCase().includes(searchLower);
       });
     }
 
@@ -63,6 +66,12 @@ const FindPartners = () => {
         break;
       case 'name-desc':
         processedPartners.sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      case 'level-asc':
+        processedPartners.sort((a, b) => getLevelOrder(a.level) - getLevelOrder(b.level));
+        break;
+      case 'level-desc':
+        processedPartners.sort((a, b) => getLevelOrder(b.level) - getLevelOrder(a.level));
         break;
       default:
       
@@ -97,7 +106,7 @@ const FindPartners = () => {
             </div>
             <input
               type="text"
-              placeholder="Search by subject, name, location..."
+              placeholder="Search by Subject..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="block w-full pl-11 pr-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500 transition-colors"
@@ -115,6 +124,8 @@ const FindPartners = () => {
               <option value="rating-asc">Lowest Rating</option>
               <option value="name-asc">Name (A-Z)</option>
               <option value="name-desc">Name (Z-A)</option>
+              <option value="level-asc">Experience Level (Beginner to Expert)</option>
+              <option value="level-desc">Experience Level (Expert to Beginner)</option>
             </select>
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
               <ChevronDown className="h-5 w-5 text-gray-400" />

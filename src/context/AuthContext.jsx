@@ -171,9 +171,13 @@ export const AuthProvider = ({ children }) => {
         if (formData.name) updatedFirebaseUser.displayName = formData.name;
         if (formData.photoURL !== undefined) updatedFirebaseUser.photoURL = formData.photoURL;
         setUser(updatedFirebaseUser);
+        // Success toast is handled in apiUpdateUserProfile
+      } else {
+        throw new Error('No user logged in');
       }
     } catch (err) {
       const msg = err.response?.data?.msg || err.message || 'Profile update failed';
+      // Error toast is handled in apiUpdateUserProfile, only show if it wasn't already shown
       if (!err.response) toast.error(msg);
       throw err;
     }
