@@ -7,9 +7,6 @@ Study Mate is a two-part platform that helps students create study profiles, dis
 
 ## https://studymate-ih.netlify.app/
 
-<p align="center">
-  <img src="https://i.ibb.co.com/1JsjWzYr/st.jpg" alt="Study Mate preview" width="50%"/>
-</p>
 
 ---
 
@@ -111,7 +108,7 @@ npm run build
 | DELETE | `/api/auth/me`                         | Delete user + associated partner      |
 | POST   | `/api/auth/request/send/:partnerId`    | Send partner request                  |
 | DELETE | `/api/auth/request/cancel/:partnerId`  | Cancel partner request                |
-| GET    | `/api/auth/requests?type=sent|received`| List requests                         |
+| GET    | `/api/auth/requests?type=sent` |received| List requests                         |
 | GET    | `/api/partners`                        | List partner cards                    |
 | GET    | `/api/partners/:id`                    | Partner detail                        |
 | POST   | `/api/partners`                        | Create partner profile                |
