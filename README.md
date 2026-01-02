@@ -3,7 +3,7 @@
 Study Mate is a collaborative platform designed to help students discover compatible study partners, manage learning profiles, and track their networking activity. This project features a polished, premium React frontend and a robust Express/MongoDB backend.
 
 <p align="center">
-  <img src="public/thumbnail.png" alt="Study Mate preview" width="800"/>
+  <img src="https://i.ibb.co.com/GQhWyhKh/image.png" alt="Study Mate preview" width="800"/>
 </p>
 
 ## 🌐 Live Demo
