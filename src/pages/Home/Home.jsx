@@ -9,7 +9,7 @@ import { Users, BookOpen, Trophy, Globe, Target, Shield, Clock, Heart, HelpCircl
 // --- Section Components (Inline for Cleanliness given the task scope) ---
 
 const StatsSection = () => (
-  <section className="py-12 bg-base-100">
+  <section className="py-20 lg:py-28 bg-base-100">
     <div className="container mx-auto px-4 lg:px-8">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
         {[
@@ -30,7 +30,7 @@ const StatsSection = () => (
 );
 
 const AboutSection = () => (
-  <section className="py-16 md:py-24 overflow-hidden">
+  <section className="py-20 lg:py-28 overflow-hidden">
     <div className="container mx-auto px-4 lg:px-8">
       <div className="flex flex-col md:flex-row items-center gap-12 lg:gap-20">
         <div className="w-full md:w-1/2 relative">
@@ -70,7 +70,7 @@ const AboutSection = () => (
 );
 
 const FeaturesSection = () => (
-  <section className="py-20 bg-base-200/50">
+  <section className="py-20 lg:py-28 bg-base-200/50">
     <div className="container mx-auto px-4 lg:px-8">
        <div className="text-center max-w-2xl mx-auto mb-16">
           <h2 className="text-3xl md:text-4xl font-bold font-display mb-4">Why Choose StudyMate?</h2>
@@ -96,7 +96,7 @@ const FeaturesSection = () => (
 );
 
 const CategoriesSection = () => (
-  <section className="py-20">
+  <section className="py-20 lg:py-28">
     <div className="container mx-auto px-4 lg:px-8">
        <h2 className="text-3xl font-bold font-display mb-10 text-center">Popular Subjects</h2>
        <div className="flex flex-wrap justify-center gap-4">
@@ -115,7 +115,7 @@ const CategoriesSection = () => (
 );
 
 const FAQSection = () => (
-  <section className="py-20 bg-base-200/50">
+  <section className="py-20 lg:py-28 bg-base-200/50">
      <div className="container mx-auto px-4 lg:px-8 max-w-4xl">
        <div className="text-center mb-16">
          <h2 className="text-3xl font-bold font-display mb-4">Frequently Asked Questions</h2>
@@ -141,7 +141,7 @@ const FAQSection = () => (
 );
 
 const NewsletterSection = () => (
-  <section className="py-24">
+  <section className="py-20 lg:py-28">
     <div className="container mx-auto px-4 lg:px-8">
       <div className="bg-gradient-to-br from-primary to-accent rounded-[3rem] p-8 md:p-16 text-center text-white relative overflow-hidden">
          {/* Decorative circles */}

@@ -146,127 +146,134 @@ const PartnerDetail = () => {
   const isOnline = partner.activeStatus?.toLowerCase() === 'online';
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-10 px-4 sm:px-6 lg:px-8 transition-colors">
-      <div className="container mx-auto max-w-6xl">
+    <div className="py-10 md:py-20 transition-colors mt-3 md:mt-10">
+      <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
         
         {/* Back Button */}
-        <div className="mb-6">
+        <div className="mb-8">
           <button
-            onClick={() => navigate(-1)} // Age'r page e fire jaoyar jonno
-            className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-medium transition-colors"
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 text-base-content/60 hover:text-primary font-medium transition-colors group"
           >
-            <ArrowLeft className="w-5 h-5" />
-            Back
+            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+            Back to Partners
           </button>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="flex flex-col lg:flex-row lg:gap-8">
+        <div className="flex flex-col lg:flex-row gap-8">
 
           {/* Left Column: Profile Card */}
-          <div className="lg:w-1/3 w-full mb-6 lg:mb-0">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-6 text-center">
+          <div className="lg:w-1/3 w-full">
+            <div className="bg-base-100 rounded-3xl shadow-xl border border-base-200 p-8 text-center sticky top-24">
               {/* Avatar */}
-              <div className="relative w-32 h-32 rounded-full flex items-center justify-center bg-cyan-600 text-white mx-auto mb-4">
+              <div className="relative w-32 h-32 rounded-full flex items-center justify-center bg-gradient-to-br from-primary to-secondary text-white mx-auto mb-6 shadow-2xl shadow-primary/30">
                 {partner.image ? (
-                  <img src={partner.image} alt={partner.name} className="w-full h-full rounded-full object-cover" />
+                  <img src={partner.image} alt={partner.name} className="w-full h-full rounded-full object-cover border-4 border-base-100" />
                 ) : (
-                  <span className="text-5xl font-bold">{getInitials(partner.name)}</span>
+                  <span className="text-4xl font-display font-bold">{getInitials(partner.name)}</span>
+                )}
+                {isOnline && (
+                  <span className="absolute bottom-2 right-2 w-5 h-5 bg-green-500 border-4 border-base-100 rounded-full"></span>
                 )}
               </div>
               
-              {/* Name and Subject */}
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{partner.name}</h2>
-              <p className="text-md text-gray-600 dark:text-gray-400 mb-6">{partner.subject}</p>
+              <h2 className="text-3xl font-bold text-base-content mb-2 font-display">{partner.name}</h2>
+              <p className="text-lg text-primary font-medium mb-6 bg-primary/5 inline-block px-4 py-1 rounded-full">{partner.subject}</p>
 
-              {/* Details List */}
-              <div className="space-y-4 text-left">
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2">Experience</h4>
-                  <span className="inline-block bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm font-medium">
+              <div className="space-y-4 text-left bg-base-200/50 p-6 rounded-2xl">
+                <div className="flex justify-between items-center">
+                  <span className="text-base-content/60 font-medium">Experience</span>
+                  <span className="bg-secondary/10 text-secondary px-3 py-1 rounded-full text-sm font-bold">
                     {partner.level || 'Beginner'}
                   </span>
                 </div>
                 
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2">Study Mode</h4>
-                  <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${isOnline ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'}`}>
+                <div className="flex justify-between items-center">
+                  <span className="text-base-content/60 font-medium">Study Mode</span>
+                  <span className={`px-3 py-1 rounded-full text-sm font-bold ${isOnline ? 'bg-green-500/10 text-green-600' : 'bg-base-300 text-base-content/60'}`}>
                     {partner.activeStatus || 'Offline'}
                   </span>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <Star className="w-5 h-5 text-yellow-500" fill="currentColor" />
-                  <span className="text-gray-700 dark:text-gray-300 font-medium">{partner.rating.toFixed(1)} rating</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-base-content/60 font-medium">Rating</span>
+                  <div className="flex items-center gap-1.5 bg-orange-500/10 text-orange-600 px-3 py-1 rounded-full text-sm font-bold">
+                    <Star className="w-4 h-4 fill-current" />
+                    <span>{partner.rating.toFixed(1)}</span>
+                  </div>
                 </div>
-            
               </div>
             </div>
           </div>
 
-          {/* Right Column: About and Message */}
+          {/* Right Column: About and Actions */}
           <div className="lg:w-2/3 w-full">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-8">
-              {/* About Section */}
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">About</h3>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
-                {partner.about || 'No bio provided.'}
-              </p>
+            <div className="bg-base-100 rounded-3xl shadow-xl border border-base-200 p-8 h-full flex flex-col">
+              
+              <div className="mb-8">
+                <h3 className="text-2xl font-bold text-base-content mb-4 flex items-center gap-2">
+                  <Users className="w-6 h-6 text-primary" />
+                  About Me
+                </h3>
+                <p className="text-base-content/70 leading-relaxed text-lg">
+                  {partner.about || 'No bio provided.'}
+                </p>
+              </div>
 
-              {/* Details: Location & Availability */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6 border-t border-gray-200 dark:border-gray-700 pt-6">
-                <div>
-                  <h4 className="flex items-center gap-2 text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+                <div className="bg-base-200/50 p-5 rounded-2xl border border-base-200">
+                  <h4 className="flex items-center gap-2 text-sm font-bold text-primary mb-2 uppercase tracking-wide">
                     <MapPin className="w-4 h-4" />
                     Location
                   </h4>
-                  <p className="text-gray-800 dark:text-gray-200">{partner.location || 'Not specified'}</p>
+                  <p className="text-base-content font-medium text-lg">{partner.location || 'Not specified'}</p>
                 </div>
-                <div>
-                  <h4 className="flex items-center gap-2 text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2">
+                <div className="bg-base-200/50 p-5 rounded-2xl border border-base-200">
+                  <h4 className="flex items-center gap-2 text-sm font-bold text-primary mb-2 uppercase tracking-wide">
                     <Clock className="w-4 h-4" />
                     Availability
                   </h4>
-                  <p className="text-gray-800 dark:text-gray-200">{partner.availability || 'Not specified'}</p>
+                  <p className="text-base-content font-medium text-lg">{partner.availability || 'Not specified'}</p>
                 </div>
               </div>
 
-              {/* --- BUTTON LOGIC UPDATE (START) --- */}
-              {/* Send Message Section */}
-              <form onSubmit={hasSentRequest ? handleCancelRequest : handleSendRequest}>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                  Send a Message <span className="text-sm text-gray-500 font-normal">(Optional)</span>
-                </h3>
-                <textarea
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  rows="4"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                  placeholder="Introduce yourself and explain why you'd like to study together..."
-                  disabled={hasSentRequest} // Request pathale message likhte parbe na
-                />
+              <div className="mt-auto pt-8 border-t border-base-200">
+                <form onSubmit={hasSentRequest ? handleCancelRequest : handleSendRequest}>
+                  {!hasSentRequest && (
+                    <div className="mb-6">
+                      <label className="block text-sm font-bold text-base-content mb-3 ml-1">
+                        Send a Message <span className="text-base-content/40 font-normal">(Optional)</span>
+                      </label>
+                      <textarea
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        rows="3"
+                        className="w-full px-4 py-3 border border-base-300 rounded-xl bg-base-200/30 text-base-content focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none"
+                        placeholder="Hi! I noticed we're both studying..."
+                      />
+                    </div>
+                  )}
 
-                {hasSentRequest ? (
-                  // Jodi request pathano hoye thake
-                  <button
-                    type="submit"
-                    className="mt-4 px-8 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
-                  >
-                    <XCircle className="w-5 h-5" />
-                    Cancel Partner Request
-                  </button>
-                ) : (
-                  // Jodi request na pathano hoy
-                  <button
-                    type="submit"
-                    className="mt-4 px-8 py-3 bg-cyan-600 text-white font-semibold rounded-lg hover:bg-cyan-700 transition-colors flex items-center gap-2"
-                  >
-                    <CheckCircle className="w-5 h-5" />
-                    Send Partner Request
-                  </button>
-                )}
-              </form>
-              {/* --- BUTTON LOGIC UPDATE (END) --- */}
+                  {hasSentRequest ? (
+                    <button
+                      type="submit"
+                      className="w-full py-4 bg-red-500/10 text-red-500 font-bold rounded-xl hover:bg-red-500 hover:text-white transition-all flex items-center justify-center gap-2 border border-red-500/20 group"
+                    >
+                      <XCircle className="w-5 h-5 group-hover:rotate-90 transition-transform" />
+                      Cancel Request
+                    </button>
+                  ) : (
+                    <button
+                      type="submit"
+                      className="w-full py-4 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-2 shadow-xl shadow-primary/30 hover:-translate-y-1"
+                    >
+                      <CheckCircle className="w-5 h-5" />
+                      Send Connection Request
+                    </button>
+                  )}
+                </form>
+              </div>
+
             </div>
           </div>
 

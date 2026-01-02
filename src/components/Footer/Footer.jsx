@@ -57,7 +57,7 @@ const Footer = () => {
       <div className="bg-base-300/50 py-4">
         <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between text-sm opacity-70">
            <p>© {new Date().getFullYear()} StudyMate. All rights reserved.</p>
-           <p>Designed with <span className="text-red-500">❤</span> for Students.</p>
+           <p>Designed with <span className="text-red-500">Injam</span> for Students.</p>
         </div>
       </div>
     </div>

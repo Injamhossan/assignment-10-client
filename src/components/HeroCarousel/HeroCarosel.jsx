@@ -138,7 +138,7 @@ export const HeroCarousel = () => {
                   <div className="pt-4">
                     <Link 
                       to="/findpartners"
-                      className="inline-flex items-center justify-center px-8 py-4 bg-primary text-white font-bold rounded-full hover:bg-white hover:text-primary transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1"
+                      className="inline-flex items-center justify-center px-8 py-4 bg-primary text-white font-bold rounded-full hover:bg-primary/90 hover:-translate-y-1 transition-all duration-300 shadow-xl hover:shadow-2xl"
                     >
                       Find Partners Now
                     </Link>

@@ -11,8 +11,11 @@ const StatCard = ({ title, value, icon, color, trend }) => (
         <p className="text-base-content/60 text-sm font-medium mb-1">{title}</p>
         <h3 className="text-3xl font-bold text-base-content">{value}</h3>
       </div>
-      <div className={`p-3 rounded-xl ${color} bg-opacity-10 text-opacity-100`}>
-        {icon}
+      <div className="relative p-3 rounded-xl overflow-hidden">
+        <div className={`absolute inset-0 ${color} opacity-10`}></div>
+        <div className="relative z-10">
+          {icon}
+        </div>
       </div>
     </div>
     <div className="mt-4 flex items-center gap-2">

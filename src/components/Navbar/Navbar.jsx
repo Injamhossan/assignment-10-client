@@ -61,12 +61,6 @@ const Navbar = () => {
     { to: "/about", label: "About Us" },
     { to: "/contact", label: "Contact" },
   ];
-
-  /* 
-     Logged-out: Home, Find Partners, About, Contact (4 routes > 3 minimum)
-     Logged-in: Above + Dashboard (5 minimum effectively via access) 
-  */
-
   return (
     <header 
       className={`fixed top-0 inset-x-0 z-100 transition-all duration-300 ${
@@ -93,7 +87,7 @@ const Navbar = () => {
                 <li key={link.to}>
                   <Link 
                     to={link.to} 
-                    className={`text-sm font-medium transition-colors hover:text-primary ${
+                    className={`text-[15px] font-medium transition-colors hover:text-primary ${
                       location.pathname === link.to 
                         ? "text-primary font-semibold" 
                         : "text-base-content/70 hover:text-base-content"

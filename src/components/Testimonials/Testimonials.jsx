@@ -60,69 +60,82 @@ const Rating = ({ rating }) => {
 
 const Testimonials = () => {
   return (
-    <section className="bg-gray-50 dark:bg-gray-800/50 py-16 lg:py-20 transition-colors">
-      <div className="container mx-auto px-4">
+    <section className="py-20 lg:py-28 bg-base-100 relative overflow-hidden">
+      {/* Decorative blobs */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+
+      <div className="container mx-auto px-4 lg:px-8 relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#300A91] dark:text-purple-400 mb-4">
-            What Our Students Say
+        <div className="text-center mb-16 max-w-3xl mx-auto">
+          <span className="inline-block px-4 py-1.5 rounded-full bg-secondary/10 text-secondary font-bold text-sm mb-4 tracking-wider uppercase">Student Success Stories</span>
+          <h2 className="text-4xl md:text-5xl font-bold font-display text-base-content mb-6">
+            Loved solely by <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Students</span>
           </h2>
-          <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Hear from students who found success with StudyMate
+          <p className="text-xl text-base-content/60">
+            Join thousands of students who have found their perfect study match and achieved their academic goals.
           </p>
         </div>
 
         {/* Swiper Slider */}
         <Swiper
           modules={[Navigation, Pagination, Autoplay, A11y]}
-          spaceBetween={30} // Slide-gular moddhe gap
-          slidesPerView={1} // Mobile-e 1-ta slide
+          spaceBetween={40}
+          slidesPerView={1}
           loop={true}
           autoplay={{
-            delay: 5000, // 5 second por por change hobe
+            delay: 4000,
             disableOnInteraction: false,
+            pauseOnMouseEnter: true
           }}
           pagination={{
             clickable: true,
             dynamicBullets: true,
           }}
-          navigation={true}
           breakpoints={{
-            // Tablet size
             768: {
               slidesPerView: 2,
-              spaceBetween: 30,
             },
-            // Desktop size
             1024: {
               slidesPerView: 3,
-              spaceBetween: 40,
             },
           }}
-          className="pb-12" // Pagination-er jonno niche padding
+          className="pb-16 !px-4" // !px-4 to prevent shadow clipping
         >
           {testimonialData.map((item, index) => (
-            <SwiperSlide key={index}>
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 h-full flex flex-col justify-between border border-gray-200 dark:border-gray-700">
-                <div>
-                  <Quote className="w-10 h-10 text-[#300A91] dark:text-purple-400 mb-4" fill="#300A91" />
-                  <p className="text-gray-600 dark:text-gray-300 italic mb-6">
-                    "{item.quote}"
-                  </p>
+            <SwiperSlide key={index} className="h-full">
+              <div className="bg-base-100 rounded-[2rem] p-8 shadow-xl border border-base-200 h-full flex flex-col relative group hover:-translate-y-2 transition-transform duration-300">
+                {/* Quote Icon Background */}
+                <div className="absolute top-8 right-8 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <Quote size={64} className="text-primary fill-current" />
                 </div>
+
+                {/* Rating */}
+                <div className="mb-6 relative z-10">
+                   <div className="inline-flex gap-1 bg-orange-500/10 px-3 py-1.5 rounded-full">
+                     {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-4 h-4 ${i < item.rating ? 'text-orange-500 fill-orange-500' : 'text-base-300'}`}
+                        />
+                      ))}
+                   </div>
+                </div>
+
+                {/* Quote Text */}
+                <p className="text-lg text-base-content/80 font-medium leading-relaxed italic mb-8 flex-grow relative z-10">
+                  "{item.quote}"
+                </p>
                 
-                <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-                  <div className="flex items-center justify-between">
-                    {/* User Info */}
-                    <div className="flex items-center gap-4">
-                      <img src={item.image} alt={item.name} className="w-12 h-12 rounded-full object-cover" />
-                      <div>
-                        <h4 className="font-bold text-gray-900 dark:text-white">{item.name}</h4>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">{item.role}</p>
-                      </div>
-                    </div>
-                    {/* Rating */}
-                    <Rating rating={item.rating} />
+                {/* User Info */}
+                <div className="flex items-center gap-4 mt-auto border-t border-base-200 pt-6">
+                  <div className="relative">
+                     <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary rounded-full blur-sm opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                     <img src={item.image} alt={item.name} className="w-14 h-14 rounded-full object-cover relative z-10 border-2 border-base-100" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-lg text-base-content font-display">{item.name}</h4>
+                    <p className="text-sm font-medium text-primary">{item.role}</p>
                   </div>
                 </div>
               </div>
