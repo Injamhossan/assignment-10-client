@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, Link as LinkIcon } from 'lucide-react';
-// --- PORIBORTON: Import path thik kora hoyeche ---
 import NavLogo from '../../assets/StudyMate.png';
-import PageLoader from '../../components/Spinner/PageLoader';
+// import PageLoader from '../../components/Spinner/PageLoader'; 
 import { useAuth } from '../../context/AuthContext';
 
 const Register = () => {
-  const [loading, setLoading] = useState(true);
-  const [formLoading, setFormLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // Managed by auth state mostly, avoiding internal loading state conflict
+  // const [loading, setLoading] = useState(true); // Original loading was a bit redundant if auth context handles it
+  
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -19,26 +19,16 @@ const Register = () => {
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const { register, googleSignIn, user } = useAuth();
+  
+  // Safe destructure in case mock context needed
+  const { register, googleSignIn, user } = useAuth() || {};
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   useEffect(() => {
     if (user) {
       navigate('/');
     }
   }, [user, navigate]);
-
-  if (loading) {
-    return <PageLoader />;
-  }
 
   const validatePassword = (password) => {
     if (password.length < 8) return 'Password must be at least 8 characters';
@@ -59,26 +49,19 @@ const Register = () => {
     e.preventDefault();
     const newErrors = {};
 
-    if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
-    }
-
+    if (!formData.name.trim()) newErrors.name = 'Name is required';
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email is invalid';
     }
     
-    // photoURL optional
     if (formData.photoURL && !/^https?:\/\/.+/.test(formData.photoURL)) {
-      newErrors.photoURL = 'Please enter a valid URL (e.g., http:// or https://)';
+      newErrors.photoURL = 'Please enter a valid URL (start with http:// or https://)';
     }
-
 
     const passwordError = validatePassword(formData.password);
-    if (passwordError) {
-      newErrors.password = passwordError;
-    }
+    if (passwordError) newErrors.password = passwordError;
 
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
@@ -89,9 +72,9 @@ const Register = () => {
       return;
     }
 
-    setFormLoading(true);
+    setLoading(true);
     try {
-      await register(formData.email, formData.password, formData.name, formData.photoURL);
+      if(register) await register(formData.email, formData.password, formData.name, formData.photoURL);
       
       setFormData({
         name: '',
@@ -104,66 +87,63 @@ const Register = () => {
       navigate('/');
     } catch (error) {
       console.error('Registration error:', error);
-      // Server-side error handle kora
       if (error.response && error.response.data && error.response.data.msg) {
-        // Jodi error-ti email duplicate hoy
         if (error.response.data.msg.includes('Email already registered')) {
           setErrors({ email: 'This email is already registered.' });
         } else {
-          // Onnano server error
           setErrors({ form: error.response.data.msg });
         }
       } else {
         setErrors({ form: 'Registration failed. Please try again.' });
       }
     } finally {
-      setFormLoading(false);
+      setLoading(false);
     }
   };
 
   const handleGoogleRegister = async () => {
-    setFormLoading(true);
+    setLoading(true);
     try {
-      await googleSignIn();
+      if(googleSignIn) await googleSignIn();
       navigate('/');
     } catch (error) {
       console.error('Google registration error:', error);
       setErrors({ form: 'Google Sign-in failed. Please try again.' });
     } finally {
-      setFormLoading(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors">
-      <div className="max-w-md w-full mx-auto">
+    <div className="min-h-screen bg-base-200 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center transition-colors">
+      <div className="max-w-md w-full space-y-8 animate-fade-in">
         {/* Logo and Header */}
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center justify-center mb-4">
-            <img src={NavLogo} alt="StudyMate" className="h-12 w-auto" />
+        <div className="text-center">
+          <Link to="/" className="inline-block mb-2 transform hover:scale-105 transition-transform">
+             <h1 className="text-4xl font-bold font-display bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">StudyMate</h1>
           </Link>
-          <h1 className="text-3xl font-bold text-[#300A91] dark:text-purple-400 mb-2">
+          <h2 className="mt-4 text-3xl font-bold text-base-content">
             Create Account
-          </h1>
-          <p className="text-gray-600 dark:text-gray-300">
+          </h2>
+          <p className="mt-2 text-base-content/60">
             Join StudyMate and start your learning journey
           </p>
         </div>
 
         {/* Registration Form Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 border border-gray-200 dark:border-gray-700">
+        <div className="bg-base-100 rounded-3xl shadow-xl p-8 border border-base-200">
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* --- General Form Error --- */}
-            {errors.form && <p className="mt-1 text-sm text-red-500 text-center">{errors.form}</p>}
+            {errors.form && <p className="p-3 bg-red-100 text-red-600 rounded-lg text-sm text-center font-medium">{errors.form}</p>}
 
             {/* Name Field */}
             <div>
-              <label htmlFor="name" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="name" className="block text-sm font-semibold text-base-content mb-2">
                 Full Name
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-gray-400" />
+                  <User className="h-5 w-5 text-base-content/40" />
                 </div>
                 <input
                   id="name"
@@ -171,23 +151,23 @@ const Register = () => {
                   value={formData.name}
                   onChange={(e) => handleChange('name', e.target.value)}
                   placeholder="John Doe"
-                  className={`block w-full pl-10 pr-3 py-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500 focus:border-transparent transition-colors ${
-                    errors.name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                  className={`block w-full pl-10 pr-3 py-3 border rounded-xl bg-base-200/50 text-base-content placeholder-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${
+                    errors.name ? 'border-red-500' : 'border-base-300'
                   }`}
                   required
                 />
               </div>
-              {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
+              {errors.name && <p className="mt-1 text-xs text-red-500 font-medium">{errors.name}</p>}
             </div>
 
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="email" className="block text-sm font-semibold text-base-content mb-2">
                 Email Address
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
+                  <Mail className="h-5 w-5 text-base-content/40" />
                 </div>
                 <input
                   id="email"
@@ -195,23 +175,23 @@ const Register = () => {
                   value={formData.email}
                   onChange={(e) => handleChange('email', e.target.value)}
                   placeholder="your.email@example.com"
-                  className={`block w-full pl-10 pr-3 py-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500 focus:border-transparent transition-colors ${
-                    errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                  className={`block w-full pl-10 pr-3 py-3 border rounded-xl bg-base-200/50 text-base-content placeholder-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${
+                    errors.email ? 'border-red-500' : 'border-base-300'
                   }`}
                   required
                 />
               </div>
-              {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
+              {errors.email && <p className="mt-1 text-xs text-red-500 font-medium">{errors.email}</p>}
             </div>
             
             {/* Photo URL (Optional) */}
             <div>
-              <label htmlFor="photoURL" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="photoURL" className="block text-sm font-semibold text-base-content mb-2">
                 Photo URL (Optional)
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <LinkIcon className="h-5 w-5 text-gray-400" />
+                  <LinkIcon className="h-5 w-5 text-base-content/40" />
                 </div>
                 <input
                   id="photoURL"
@@ -219,22 +199,22 @@ const Register = () => {
                   value={formData.photoURL}
                   onChange={(e) => handleChange('photoURL', e.target.value)}
                   placeholder="https://example.com/image.png"
-                  className={`block w-full pl-10 pr-3 py-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500 focus:border-transparent transition-colors ${
-                    errors.photoURL ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                  className={`block w-full pl-10 pr-3 py-3 border rounded-xl bg-base-200/50 text-base-content placeholder-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${
+                    errors.photoURL ? 'border-red-500' : 'border-base-300'
                   }`}
                 />
               </div>
-              {errors.photoURL && <p className="mt-1 text-sm text-red-500">{errors.photoURL}</p>}
+              {errors.photoURL && <p className="mt-1 text-xs text-red-500 font-medium">{errors.photoURL}</p>}
             </div>
 
             {/* Password Field */}
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="password" className="block text-sm font-semibold text-base-content mb-2">
                 Password
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
+                  <Lock className="h-5 w-5 text-base-content/40" />
                 </div>
                 <input
                   id="password"
@@ -242,15 +222,15 @@ const Register = () => {
                   value={formData.password}
                   onChange={(e) => handleChange('password', e.target.value)}
                   placeholder="••••••••"
-                  className={`block w-full pl-10 pr-10 py-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500 focus:border-transparent transition-colors ${
-                    errors.password ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                  className={`block w-full pl-10 pr-10 py-3 border rounded-xl bg-base-200/50 text-base-content placeholder-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${
+                    errors.password ? 'border-red-500' : 'border-base-300'
                   }`}
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-base-content/40 hover:text-base-content transition-colors"
                 >
                   {showPassword ? (
                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -264,20 +244,20 @@ const Register = () => {
                   )}
                 </button>
               </div>
-              {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password}</p>}
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              {errors.password && <p className="mt-1 text-xs text-red-500 font-medium">{errors.password}</p>}
+              <p className="mt-1 text-xs text-base-content/60">
                 Must be 8+ characters with uppercase, lowercase, and number
               </p>
             </div>
 
             {/* Confirm Password Field */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="confirmPassword" className="block text-sm font-semibold text-base-content mb-2">
                 Confirm Password
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
+                  <Lock className="h-5 w-5 text-base-content/40" />
                 </div>
                 <input
                   id="confirmPassword"
@@ -285,15 +265,15 @@ const Register = () => {
                   value={formData.confirmPassword}
                   onChange={(e) => handleChange('confirmPassword', e.target.value)}
                   placeholder="••••••••"
-                  className={`block w-full pl-10 pr-10 py-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500 focus:border-transparent transition-colors ${
-                    errors.confirmPassword ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                  className={`block w-full pl-10 pr-10 py-3 border rounded-xl bg-base-200/50 text-base-content placeholder-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${
+                    errors.confirmPassword ? 'border-red-500' : 'border-base-300'
                   }`}
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-base-content/40 hover:text-base-content transition-colors"
                 >
                   {showConfirmPassword ? (
                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -308,28 +288,28 @@ const Register = () => {
                 </button>
               </div>
               {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-500">{errors.confirmPassword}</p>
+                <p className="mt-1 text-xs text-red-500 font-medium">{errors.confirmPassword}</p>
               )}
             </div>
 
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={formLoading}
-              className="w-full bg-[#300A91] dark:bg-purple-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#3C0AA4] dark:hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500 focus:ring-offset-2 transition-colors shadow-lg hover:shadow-xl mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loading}
+              className="w-full bg-primary text-white py-3.5 px-4 rounded-xl font-bold hover:bg-primary/90 focus:outline-none focus:ring-4 focus:ring-primary/30 transition-all shadow-lg hover:shadow-primary/30 mt-6 disabled:opacity-70 disabled:cursor-not-allowed transform hover:-translate-y-0.5"
             >
-              {formLoading ? 'Creating Account...' : 'Creating Account'}
+              {loading ? 'Creating Account...' : 'Create Account'}
             </button>
           </form>
 
           {/* Divider */}
-          <div className="mt-6">
+          <div className="mt-8">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                <div className="w-full border-t border-base-300"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                <span className="px-2 bg-base-100 text-base-content/60">
                   Or continue with
                 </span>
               </div>
@@ -339,8 +319,8 @@ const Register = () => {
             <button
               type="button"
               onClick={handleGoogleRegister}
-              disabled={formLoading}
-              className="mt-4 w-full flex items-center justify-center gap-3 py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loading}
+              className="mt-6 w-full flex items-center justify-center gap-3 py-3.5 px-4 border border-base-300 rounded-xl bg-base-100 text-base-content font-semibold hover:bg-base-200 focus:outline-none focus:ring-2 focus:ring-base-300 transition-all disabled:opacity-50"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path
@@ -360,16 +340,16 @@ const Register = () => {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                 />
               </svg>
-              Continue with Google
+              Google
             </button>
           </div>
 
           {/* Login Link */}
-          <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-300">
+          <p className="mt-8 text-center text-sm text-base-content/60">
             Already have an account?{' '}
             <Link
               to="/login"
-              className="text-[#300A91] dark:text-purple-400 hover:underline font-semibold"
+              className="text-primary hover:underline font-bold"
             >
               Login here
             </Link>

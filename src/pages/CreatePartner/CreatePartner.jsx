@@ -107,29 +107,29 @@ const CreatePartner = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors">
+    <div className="py-8 transition-colors">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
+          <h1 className="text-3xl font-bold text-base-content mb-2">
             {partnerData ? 'Update Your Profile' : 'Create Your Profile'}
           </h1>
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-base-content/60">
             {partnerData ? 'Update your details to connect with partners' : 'Share your details to connect with partners'}
           </p>
         </div>
 
         {/* Profile Form Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 border border-gray-200 dark:border-gray-700">
+        <div className="bg-base-100 rounded-2xl shadow-lg p-8 border border-base-200">
           <form onSubmit={handleSubmit} className="space-y-6">
             
             {/* Full Name */}
             <div>
-              <label htmlFor="name" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="name" className="block text-sm font-semibold text-base-content mb-2">
                 Full Name *
               </label>
               <div className="relative">
-                <User className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <User className="h-5 w-5 text-base-content/40 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   id="name"
                   name="name"
@@ -137,7 +137,7 @@ const CreatePartner = () => {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="Enter your full name"
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500"
+                  className="block w-full pl-10 pr-3 py-3 border border-base-300 rounded-lg bg-base-200/30 text-base-content placeholder-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
                   required
                 />
               </div>
@@ -145,29 +145,29 @@ const CreatePartner = () => {
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="email" className="block text-sm font-semibold text-base-content mb-2">
                 Email *
               </label>
               <div className="relative">
-                <Mail className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Mail className="h-5 w-5 text-base-content/40 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   id="email"
                   name="email"
                   type="email"
                   value={formData.email}
                   disabled 
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 cursor-not-allowed"
+                  className="block w-full pl-10 pr-3 py-3 border border-base-300 rounded-lg bg-base-200 text-base-content/60 cursor-not-allowed"
                 />
               </div>
             </div>
             
             {/* Profile Image URL */}
             <div>
-              <label htmlFor="image" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="image" className="block text-sm font-semibold text-base-content mb-2">
                 Profile Image URL
               </label>
               <div className="relative">
-                <ImageIcon className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <ImageIcon className="h-5 w-5 text-base-content/40 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   id="image"
                   name="image"
@@ -175,18 +175,18 @@ const CreatePartner = () => {
                   value={formData.image}
                   onChange={handleChange}
                   placeholder="e.g., https://your-image.com/profile.png"
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500"
+                  className="block w-full pl-10 pr-3 py-3 border border-base-300 rounded-lg bg-base-200/30 text-base-content placeholder-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
                 />
               </div>
             </div>
 
             {/* Subject */}
             <div>
-              <label htmlFor="subject" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="subject" className="block text-sm font-semibold text-base-content mb-2">
                 Subject *
               </label>
               <div className="relative">
-                <Book className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Book className="h-5 w-5 text-base-content/40 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   id="subject"
                   name="subject"
@@ -194,7 +194,7 @@ const CreatePartner = () => {
                   value={formData.subject}
                   onChange={handleChange}
                   placeholder="e.g., Mathematics, Physics, Computer Science"
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500"
+                  className="block w-full pl-10 pr-3 py-3 border border-base-300 rounded-lg bg-base-200/30 text-base-content placeholder-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
                   required
                 />
               </div>
@@ -203,17 +203,17 @@ const CreatePartner = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Experience Level */}
               <div>
-                <label htmlFor="level" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="level" className="block text-sm font-semibold text-base-content mb-2">
                   Experience Level *
                 </label>
                 <div className="relative">
-                  <BarChart className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <BarChart className="h-5 w-5 text-base-content/40 absolute left-3 top-1/2 -translate-y-1/2" />
                   <select
                     id="level"
                     name="level"
                     value={formData.level}
                     onChange={handleChange}
-                    className="appearance-none block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500"
+                    className="appearance-none block w-full pl-10 pr-3 py-3 border border-base-300 rounded-lg bg-base-200/30 text-base-content focus:outline-none focus:ring-2 focus:ring-primary transition-all cursor-pointer"
                     required
                   >
                     <option value="" disabled>Select experience level</option>
@@ -227,17 +227,17 @@ const CreatePartner = () => {
 
               {/* Study Mode */}
               <div>
-                <label htmlFor="studyMode" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="studyMode" className="block text-sm font-semibold text-base-content mb-2">
                   Study Mode *
                 </label>
                 <div className="relative">
-                  <Wifi className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Wifi className="h-5 w-5 text-base-content/40 absolute left-3 top-1/2 -translate-y-1/2" />
                   <select
                     id="studyMode"
                     name="studyMode"
                     value={formData.studyMode}
                     onChange={handleChange}
-                    className="appearance-none block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500"
+                    className="appearance-none block w-full pl-10 pr-3 py-3 border border-base-300 rounded-lg bg-base-200/30 text-base-content focus:outline-none focus:ring-2 focus:ring-primary transition-all cursor-pointer"
                     required
                   >
                     <option value="" disabled>Select study mode</option>
@@ -250,11 +250,11 @@ const CreatePartner = () => {
 
             {/* Location */}
             <div>
-              <label htmlFor="location" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="location" className="block text-sm font-semibold text-base-content mb-2">
                 Location *
               </label>
               <div className="relative">
-                <MapPin className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <MapPin className="h-5 w-5 text-base-content/40 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   id="location"
                   name="location"
@@ -262,7 +262,7 @@ const CreatePartner = () => {
                   value={formData.location}
                   onChange={handleChange}
                   placeholder="City, State"
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500"
+                  className="block w-full pl-10 pr-3 py-3 border border-base-300 rounded-lg bg-base-200/30 text-base-content placeholder-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
                   required
                 />
               </div>
@@ -270,11 +270,11 @@ const CreatePartner = () => {
 
             {/* Availability */}
             <div>
-              <label htmlFor="availability" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="availability" className="block text-sm font-semibold text-base-content mb-2">
                 Availability *
               </label>
               <div className="relative">
-                <Clock className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Clock className="h-5 w-5 text-base-content/40 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   id="availability"
                   name="availability"
@@ -282,7 +282,7 @@ const CreatePartner = () => {
                   value={formData.availability}
                   onChange={handleChange}
                   placeholder="e.g., Weekdays 6-9 PM, Weekends"
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500"
+                  className="block w-full pl-10 pr-3 py-3 border border-base-300 rounded-lg bg-base-200/30 text-base-content placeholder-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
                   required
                 />
               </div>
@@ -290,11 +290,11 @@ const CreatePartner = () => {
 
             {/* Bio (Optional) */}
             <div>
-              <label htmlFor="about" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="about" className="block text-sm font-semibold text-base-content mb-2">
                 Bio (Optional)
               </label>
               <div className="relative">
-                <Info className="h-5 w-5 text-gray-400 absolute left-3 top-4" />
+                <Info className="h-5 w-5 text-base-content/40 absolute left-3 top-4" />
                 <textarea
                   id="about"
                   name="about"
@@ -302,7 +302,7 @@ const CreatePartner = () => {
                   value={formData.about}
                   onChange={handleChange}
                   placeholder="Tell us about yourself and your study goals..."
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500"
+                  className="block w-full pl-10 pr-3 py-3 border border-base-300 rounded-lg bg-base-200/30 text-base-content placeholder-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary transition-all"
                 />
               </div>
             </div>
@@ -311,7 +311,7 @@ const CreatePartner = () => {
             <button
               type="submit"
               disabled={formLoading}
-              className="w-full bg-cyan-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-primary text-white py-3 px-4 rounded-lg font-bold hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all shadow-lg shadow-primary/30 disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5"
             >
               {formLoading ? (partnerData ? 'Updating Profile...' : 'Creating Profile...') : (partnerData ? 'Update Profile' : 'Create Profile')}
             </button>

@@ -11,7 +11,7 @@ const getBaseURL = () => {
     return envURL.endsWith('/') ? envURL.slice(0, -1) : envURL;
   }
   // Default to production URL
-  return 'https://assignment-10-server-ivory-eta.vercel.app';
+  return 'https://assignment-10-server-ih.vercel.app';
 };
 
 const API_BASE_URL = getBaseURL();
@@ -67,9 +67,7 @@ export const loginUser = async (loginData) => {
 export const getMyProfile = async () => {
   try {
     const res = await api.get('/api/auth/me');
-    // According to documentation, response is directly the user object
-    // But some APIs might wrap it in { user: {...} }, so handle both cases
-    return res.data.user || res.data;
+    return res.data.user;
   } catch (error) {
     console.error('getMyProfile error:', error.response?.data?.msg || error.message);
     throw error;

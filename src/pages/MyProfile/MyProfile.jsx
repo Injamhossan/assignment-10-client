@@ -169,41 +169,41 @@ const MyProfile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors">
+    <div className="py-8 transition-colors">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-[#300A91] dark:text-purple-400 mb-2">
+          <h1 className="text-3xl font-bold text-primary mb-2">
             My Profile
           </h1>
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-base-content/60">
             View and update your profile information
           </p>
         </div>
 
         {/* Profile Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 border border-gray-200 dark:border-gray-700">
+        <div className="bg-base-100 rounded-2xl shadow-lg p-8 border border-base-200">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Profile Picture and Basic Info */}
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-6 pb-6 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-6 pb-6 border-b border-base-200">
               <div className="relative">
                 {formData.photoURL ? (
                   <img
                     src={formData.photoURL}
                     alt="Profile"
-                    className="w-32 h-32 rounded-full object-cover border-4 border-[#300A91] dark:border-purple-500"
+                    className="w-32 h-32 rounded-full object-cover border-4 border-primary/20"
                   />
                 ) : (
-                  <div className="w-32 h-32 rounded-full bg-[#300A91] dark:bg-purple-600 flex items-center justify-center border-4 border-[#300A91] dark:border-purple-500">
-                    <User className="w-16 h-16 text-white" />
+                  <div className="w-32 h-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20">
+                    <User className="w-16 h-16 text-primary" />
                   </div>
                 )}
               </div>
               <div className="flex-1 text-center md:text-left">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                <h2 className="text-2xl font-bold text-base-content mb-2">
                   {formData.name || 'No Name'}
                 </h2>
-                <p className="text-gray-600 dark:text-gray-300 flex items-center justify-center md:justify-start gap-2">
+                <p className="text-base-content/60 flex items-center justify-center md:justify-start gap-2">
                   <Mail className="w-4 h-4" />
                   {formData.email}
                 </p>
@@ -232,7 +232,7 @@ const MyProfile = () => {
                         setIsEditing(true);
                       }}
                       disabled={formLoading}
-                      className="w-full sm:w-auto px-4 py-2 bg-[#300A91] dark:bg-purple-600 text-white rounded-lg hover:bg-[#3C0AA4] dark:hover:bg-purple-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                      className="w-full sm:w-auto px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-primary/20"
                     >
                       <Edit2 className="w-4 h-4" />
                       Edit Profile
@@ -241,7 +241,7 @@ const MyProfile = () => {
                       type="button"
                       onClick={handleDelete}
                       disabled={formLoading}
-                      className="w-full sm:w-auto px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                      className="w-full sm:w-auto px-4 py-2 bg-red-500/10 text-red-500 border border-red-500/20 rounded-lg hover:bg-red-500 hover:text-white transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                     >
                       <Trash2 className="w-4 h-4" />
                       Delete Account
@@ -252,7 +252,7 @@ const MyProfile = () => {
                     type="button"
                     onClick={handleCancel}
                     disabled={formLoading}
-                    className="w-full sm:w-auto px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="w-full sm:w-auto px-4 py-2 bg-base-200 text-base-content/70 rounded-lg hover:bg-base-300 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                   >
                     <X className="w-4 h-4" />
                     Cancel
@@ -266,7 +266,7 @@ const MyProfile = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Name */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-semibold text-base-content mb-2">
                   Full Name
                 </label>
                 {isEditing ? (
@@ -274,11 +274,11 @@ const MyProfile = () => {
                     type="text"
                     value={formData.name}
                     onChange={(e) => handleChange('name', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500"
+                    className="w-full px-4 py-3 border border-base-300 rounded-lg bg-base-200/50 text-base-content focus:outline-none focus:ring-2 focus:ring-primary transition-all"
                     required
                   />
                 ) : (
-                  <p className="px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg text-gray-900 dark:text-white">
+                  <p className="px-4 py-3 bg-base-200/50 rounded-lg text-base-content">
                     {formData.name || 'Not set'}
                   </p>
                 )}
@@ -286,20 +286,20 @@ const MyProfile = () => {
 
               {/* Email */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-semibold text-base-content mb-2">
                   Email
                 </label>
-                <p className="px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg text-gray-900 dark:text-white">
+                <p className="px-4 py-3 bg-base-200/50 rounded-lg text-base-content/70">
                   {formData.email}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-xs text-base-content/40 mt-1">
                   Email cannot be changed
                 </p>
               </div>
 
               {/* Phone */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-semibold text-base-content mb-2">
                   Phone
                 </label>
                 {isEditing ? (
@@ -307,11 +307,11 @@ const MyProfile = () => {
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => handleChange('phone', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500"
+                    className="w-full px-4 py-3 border border-base-300 rounded-lg bg-base-200/50 text-base-content focus:outline-none focus:ring-2 focus:ring-primary transition-all"
                     placeholder="+1 234 567 8900"
                   />
                 ) : (
-                  <p className="px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg text-gray-900 dark:text-white">
+                  <p className="px-4 py-3 bg-base-200/50 rounded-lg text-base-content">
                     {formData.phone || 'Not set'}
                   </p>
                 )}
@@ -319,7 +319,7 @@ const MyProfile = () => {
 
               {/* Location */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-semibold text-base-content mb-2">
                   Location
                 </label>
                 {isEditing ? (
@@ -327,11 +327,11 @@ const MyProfile = () => {
                     type="text"
                     value={formData.location}
                     onChange={(e) => handleChange('location', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500"
+                    className="w-full px-4 py-3 border border-base-300 rounded-lg bg-base-200/50 text-base-content focus:outline-none focus:ring-2 focus:ring-primary transition-all"
                     placeholder="City, Country"
                   />
                 ) : (
-                  <p className="px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg text-gray-900 dark:text-white">
+                  <p className="px-4 py-3 bg-base-200/50 rounded-lg text-base-content">
                     {formData.location || 'Not set'}
                   </p>
                 )}
@@ -339,7 +339,7 @@ const MyProfile = () => {
 
               {/* Education */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-semibold text-base-content mb-2">
                   Education
                 </label>
                 {isEditing ? (
@@ -347,11 +347,11 @@ const MyProfile = () => {
                     type="text"
                     value={formData.education}
                     onChange={(e) => handleChange('education', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500"
+                    className="w-full px-4 py-3 border border-base-300 rounded-lg bg-base-200/50 text-base-content focus:outline-none focus:ring-2 focus:ring-primary transition-all"
                     placeholder="University, Degree"
                   />
                 ) : (
-                  <p className="px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg text-gray-900 dark:text-white">
+                  <p className="px-4 py-3 bg-base-200/50 rounded-lg text-base-content">
                     {formData.education || 'Not set'}
                   </p>
                 )}
@@ -359,7 +359,7 @@ const MyProfile = () => {
 
               {/* Interests */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-semibold text-base-content mb-2">
                   Interests
                 </label>
                 {isEditing ? (
@@ -367,11 +367,11 @@ const MyProfile = () => {
                     type="text"
                     value={formData.interests}
                     onChange={(e) => handleChange('interests', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500"
+                    className="w-full px-4 py-3 border border-base-300 rounded-lg bg-base-200/50 text-base-content focus:outline-none focus:ring-2 focus:ring-primary transition-all"
                     placeholder="Reading, Coding, Music..."
                   />
                 ) : (
-                  <p className="px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg text-gray-900 dark:text-white">
+                  <p className="px-4 py-3 bg-base-200/50 rounded-lg text-base-content">
                     {formData.interests || 'Not set'}
                   </p>
                 )}
@@ -380,7 +380,7 @@ const MyProfile = () => {
 
             {/* Bio */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-semibold text-base-content mb-2">
                 Bio
               </label>
               {isEditing ? (
@@ -388,11 +388,11 @@ const MyProfile = () => {
                   value={formData.bio}
                   onChange={(e) => handleChange('bio', e.target.value)}
                   rows="4"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500"
+                  className="w-full px-4 py-3 border border-base-300 rounded-lg bg-base-200/50 text-base-content focus:outline-none focus:ring-2 focus:ring-primary transition-all"
                   placeholder="Tell us about yourself..."
                 />
               ) : (
-                <p className="px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-lg text-gray-900 dark:text-white min-h-[100px]">
+                <p className="px-4 py-3 bg-base-200/50 rounded-lg text-base-content min-h-[100px]">
                   {formData.bio || 'No bio yet'}
                 </p>
               )}
@@ -401,14 +401,14 @@ const MyProfile = () => {
             {/* Profile Picture URL */}
             {isEditing && (
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-semibold text-base-content mb-2">
                   Profile Picture URL
                 </label>
                 <input
                   type="url"
                   value={formData.photoURL}
                   onChange={(e) => handleChange('photoURL', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500"
+                  className="w-full px-4 py-3 border border-base-300 rounded-lg bg-base-200/50 text-base-content focus:outline-none focus:ring-2 focus:ring-primary transition-all"
                   placeholder="https://example.com/photo.jpg"
                 />
               </div>
@@ -420,7 +420,7 @@ const MyProfile = () => {
                 <button
                   type="submit"
                   disabled={formLoading}
-                  className="px-6 py-3 bg-[#300A91] dark:bg-purple-600 text-white rounded-lg hover:bg-[#3C0AA4] dark:hover:bg-purple-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/20"
                 >
                   <Save className="w-4 h-4" />
                   {formLoading ? 'Saving...' : 'Save Changes'}

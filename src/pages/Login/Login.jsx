@@ -1,26 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, GraduationCap } from 'lucide-react';
-import NavLogo from '../../assets/StudyMate.png';
-import PageLoader from '../../components/Spinner/PageLoader';
+import { Mail, Lock } from 'lucide-react';
+import NavLogo from '../../assets/StudyMate.png'; // Assuming this exists, else use text
 import { useAuth } from '../../context/AuthContext';
 
 const Login = () => {
-  const [loading, setLoading] = useState(true);
-  const [formLoading, setFormLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // Managed by auth state mostly
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const { login, googleSignIn, user } = useAuth();
+  // Mock contexts if undefined during dev
+  const { login, googleSignIn, user } = useAuth() || {}; 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   useEffect(() => {
     if (user) {
@@ -28,62 +19,66 @@ const Login = () => {
     }
   }, [user, navigate]);
 
-  if (loading) {
-    return <PageLoader />;
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setFormLoading(true);
+    setLoading(true);
     try {
-      await login(email, password);
-      navigate('/');
+      if (login) await login(email, password);
+      // Navigate handled by useEffect or login promise
+      navigate('/'); 
     } catch (error) {
       console.error('Login error:', error);
+      // Toast error here
     } finally {
-      setFormLoading(false);
+      setLoading(false);
     }
   };
 
   const handleGoogleLogin = async () => {
-    setFormLoading(true);
+    setLoading(true);
     try {
-      await googleSignIn();
+      if (googleSignIn) await googleSignIn();
       navigate('/');
     } catch (error) {
       console.error('Google login error:', error);
     } finally {
-      setFormLoading(false);
+      setLoading(false);
     }
   };
 
+  const fillDemoCredentials = () => {
+    setEmail('demo@studymate.com');
+    setPassword('Password123');
+  };
+
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors">
-      <div className="max-w-md w-full mx-auto">
+    <div className="min-h-screen bg-base-200 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center transition-colors">
+      <div className="max-w-md w-full space-y-8 animate-fade-in">
         {/* Logo and Header */}
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center justify-center mb-4">
-            <img src={NavLogo} alt="StudyMate" className="h-12 w-auto" />
+        <div className="text-center">
+          <Link to="/" className="inline-block mb-2 transform hover:scale-105 transition-transform">
+             {/* Fallback to text if logo fails or use new design */}
+             <h1 className="text-4xl font-bold font-display bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">StudyMate</h1>
           </Link>
-          <h1 className="text-3xl font-bold text-[#300A91] dark:text-purple-400 mb-2">
+          <h2 className="mt-4 text-3xl font-bold text-base-content">
             Welcome Back
-          </h1>
-          <p className="text-gray-600 dark:text-gray-300">
-            Login to continue your learning journey
+          </h2>
+          <p className="mt-2 text-base-content/60">
+            Login to continue your collaborative journey
           </p>
         </div>
 
         {/* Login Form Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 border border-gray-200 dark:border-gray-700">
+        <div className="bg-base-100 rounded-3xl shadow-xl p-8 border border-base-200">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Field */}
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="email" className="block text-sm font-semibold text-base-content mb-2">
                 Email Address
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
+                  <Mail className="h-5 w-5 text-base-content/40" />
                 </div>
                 <input
                   id="email"
@@ -91,7 +86,7 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your.email@example.com"
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500 focus:border-transparent transition-colors"
+                  className="block w-full pl-10 pr-3 py-3 border border-base-300 rounded-xl bg-base-200/50 text-base-content placeholder-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   required
                 />
               </div>
@@ -99,12 +94,12 @@ const Login = () => {
 
             {/* Password Field */}
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label htmlFor="password" className="block text-sm font-semibold text-base-content mb-2">
                 Password
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
+                  <Lock className="h-5 w-5 text-base-content/40" />
                 </div>
                 <input
                   id="password"
@@ -112,13 +107,13 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="block w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500 focus:border-transparent transition-colors"
+                  className="block w-full pl-10 pr-10 py-3 border border-base-300 rounded-xl bg-base-200/50 text-base-content placeholder-base-content/40 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-base-content/40 hover:text-base-content transition-colors"
                 >
                   {showPassword ? (
                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,10 +130,13 @@ const Login = () => {
             </div>
 
             {/* Forgot Password */}
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-between">
+               <button type="button" onClick={fillDemoCredentials} className="text-xs text-primary hover:underline bg-primary/10 px-2 py-1 rounded">
+                 Demo Credentials
+               </button>
               <Link
                 to="/forgot-password"
-                className="text-sm text-[#300A91] dark:text-purple-400 hover:underline font-medium"
+                className="text-sm text-primary hover:underline font-medium"
               >
                 Forgot password?
               </Link>
@@ -147,21 +145,21 @@ const Login = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={formLoading}
-              className="w-full bg-[#300A91] dark:bg-purple-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#3C0AA4] dark:hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500 focus:ring-offset-2 transition-colors shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loading}
+              className="w-full bg-primary text-white py-3.5 px-4 rounded-xl font-bold hover:bg-primary/90 focus:outline-none focus:ring-4 focus:ring-primary/30 transition-all shadow-lg hover:shadow-primary/30 disabled:opacity-70 disabled:cursor-not-allowed transform hover:-translate-y-0.5"
             >
-              {formLoading ? 'Logging in...' : 'Login'}
+              {loading ? 'Logging in...' : 'Login'}
             </button>
           </form>
 
           {/* Divider */}
-          <div className="mt-6">
+          <div className="mt-8">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+                <div className="w-full border-t border-base-300"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                <span className="px-2 bg-base-100 text-base-content/60">
                   Or continue with
                 </span>
               </div>
@@ -171,8 +169,8 @@ const Login = () => {
             <button
               type="button"
               onClick={handleGoogleLogin}
-              disabled={formLoading}
-              className="mt-4 w-full flex items-center justify-center gap-3 py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loading}
+              className="mt-6 w-full flex items-center justify-center gap-3 py-3.5 px-4 border border-base-300 rounded-xl bg-base-100 text-base-content font-semibold hover:bg-base-200 focus:outline-none focus:ring-2 focus:ring-base-300 transition-all disabled:opacity-50"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path
@@ -192,18 +190,18 @@ const Login = () => {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                 />
               </svg>
-              Continue with Google
+              Google
             </button>
           </div>
 
           {/* Register Link */}
-          <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-300">
+          <p className="mt-8 text-center text-sm text-base-content/60">
             Don't have an account?{' '}
             <Link
               to="/register"
-              className="text-[#300A91] dark:text-purple-400 hover:underline font-semibold"
+              className="text-primary hover:underline font-bold"
             >
-              Register here
+              Sign up for free
             </Link>
           </p>
         </div>
@@ -213,3 +211,4 @@ const Login = () => {
 };
 
 export default Login;
+

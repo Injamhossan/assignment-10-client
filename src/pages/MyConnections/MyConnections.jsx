@@ -88,22 +88,22 @@ const MyConnections = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 transition-colors">
-      <div className="container mx-auto px-4 max-w-4xl">
+    <div className="py-8 transition-colors">
+      <div className="max-w-4xl mx-auto">
         
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+          <h1 className="text-3xl font-bold text-primary">
             My Connections
           </h1>
-          <p className="text-gray-600 dark:text-gray-300 mt-1">
+          <p className="text-base-content/60 mt-1">
             Manage your study partner requests and connections
           </p>
         </div>
         
         {/* Pending Sent Requests Section */}
         <div className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">
+          <h2 className="text-2xl font-semibold text-base-content mb-4">
             Pending Sent Requests ({sentPartners.length})
           </h2>
           
@@ -123,13 +123,13 @@ const MyConnections = () => {
             </div>
           ) : (
             // Jodi kono request na thake
-            <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-inner border border-gray-200 dark:border-gray-700">
-              <p className="text-gray-600 dark:text-gray-300">
+            <div className="text-center py-12 bg-base-100 rounded-xl shadow-inner border border-base-200">
+              <p className="text-base-content/60">
                 You have not sent any connection requests yet.
               </p>
               <Link
                 to="/findpartners"
-                className="mt-4 inline-block px-6 py-2 bg-cyan-600 text-white font-semibold rounded-lg hover:bg-cyan-700 transition-colors"
+                className="mt-4 inline-block px-6 py-2 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
               >
                 Find Partners
               </Link>

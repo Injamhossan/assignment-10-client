@@ -24,6 +24,10 @@ const Root = () => {
                draggable
                pauseOnHover
                theme={theme === 'dark' ? 'dark' : 'light'}
+               toastClassName={() => 
+                 "relative flex p-4 mb-4 rounded-xl shadow-xl justify-between overflow-hidden cursor-pointer border border-base-200 bg-base-100 text-base-content ml-4"
+               }
+               bodyClassName={() => "text-sm font-medium block p-3"}
            />
        </div>
     );

@@ -1,22 +1,25 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Sun, Moon, LogOut, User, ChevronDown } from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Sun, Moon, LogOut, User, ChevronDown, Menu, X, LayoutDashboard } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
 import NavLogo from "../../assets/StudyMate.png";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const menuRef = useRef(null);
   const profileDropdownRef = useRef(null);
   const { theme, toggleTheme } = useTheme();
-  const { user, logout, partnerData, loading } = useAuth();
+  const { user, logout } = useAuth() || {};
+
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = async () => {
     try {
-      await logout();
+      if (logout) await logout();
       navigate('/');
       setOpen(false);
       setProfileDropdownOpen(false);
@@ -24,6 +27,14 @@ const Navbar = () => {
       console.error('Logout error:', error);
     }
   };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     const onDocClick = (e) => {
@@ -43,226 +54,214 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", onDocClick);
   }, [profileDropdownOpen]);
 
-  // --- LINKS LOGIC PORIBORTON (START) ---
-  const links = [
+  // Main Navigation Links
+  const navLinks = [
     { to: "/", label: "Home" },
     { to: "/findpartners", label: "Find Partners" },
-    // Conditionally show Create or Edit Profile (Shudhu logged in user-er jonno)
-    !loading && user && partnerData && { to: "/createprofile", label: "Edit Profile" },
-    !loading && user && !partnerData && { to: "/createprofile", label: "Create Profile" },
-    
-    // --- SHOMADHAN: 'My Connection' shudhu user thaklei dekhabe ---
-    user && { to: "/myconnection", label: "My Connection" },
+    { to: "/about", label: "About Us" },
+    { to: "/contact", label: "Contact" },
+  ];
 
-  ].filter(Boolean); // .filter(Boolean) shob false/null entrygulo remove kore dey
-  // --- LINKS LOGIC PORIBORTON (END) ---
+  /* 
+     Logged-out: Home, Find Partners, About, Contact (4 routes > 3 minimum)
+     Logged-in: Above + Dashboard (5 minimum effectively via access) 
+  */
 
   return (
-    <header className="bg-white dark:bg-gray-900 shadow-sm py-3 transition-colors">
-      <nav className="mx-auto max-w-[1620px] px-4 lg:px-8">
-        <div className="flex items-center justify-between h-14">
-          {/* Left: Logo */}
-          <div className="flex items-center gap-3">
-            <Link to="/" className="flex items-center">
-              <img src={NavLogo} alt="StudyMate" className="h-15 w-auto" />
-            </Link>
-          </div>
+    <header 
+      className={`fixed top-0 inset-x-0 z-100 transition-all duration-300 ${
+        scrolled 
+          ? "bg-base-100/80 backdrop-blur-md shadow-sm border-b border-base-200"
+          : "bg-transparent border-b border-transparent"
+      }`}
+    >
+      <nav className="container mx-auto px-4 lg:px-8">
+        <div className="flex items-center justify-between h-20 transition-all duration-300">
+          
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2 group">
+             {/* Use text logo if image fails or for better styling control */}
+            <div className="">
+             <img src={NavLogo} alt="" className="h-[50px]" />
+            </div>
+          </Link>
 
-          {/* Center: desktop links */}
-          <div className="hidden lg:flex lg:items-center lg:justify-center flex-1">
-            <ul className="menu menu-horizontal px-1 flex gap-6 text-[#300A91] dark:text-purple-400 text-[16px] font-semibold">
-              {links.map((l) => (
-                <li key={l.to}>
-                  <Link to={l.to} className="hover:underline transition-colors">
-                    {l.label}
+          {/* Desktop Nav */}
+          <div className="hidden lg:flex items-center gap-8">
+            <ul className="flex items-center gap-6">
+              {navLinks.map((link) => (
+                <li key={link.to}>
+                  <Link 
+                    to={link.to} 
+                    className={`text-sm font-medium transition-colors hover:text-primary ${
+                      location.pathname === link.to 
+                        ? "text-primary font-semibold" 
+                        : "text-base-content/70 hover:text-base-content"
+                    }`}
+                  >
+                    {link.label}
                   </Link>
                 </li>
               ))}
-            </ul>
-          </div>
-
-          {/* Right: desktop auth buttons OR mobile menu button */}
-          <div className="flex items-center gap-3">
-            {/* Dark Mode Toggle */}
-            <button
-              onClick={toggleTheme}
-              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-400"
-              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            >
-              {theme === 'dark' ? (
-                <Sun className="h-5 w-5 text-yellow-400" />
-              ) : (
-                <Moon className="h-5 w-5 text-[#300A91]" />
+              {user && (
+                 <li>
+                   <Link 
+                     to="/dashboard" 
+                     className={`text-sm font-medium transition-colors hover:text-primary ${
+                        location.pathname.includes('/dashboard')
+                         ? "text-primary font-semibold" 
+                         : "text-base-content/70 hover:text-base-content"
+                     }`}
+                   >
+                     Dashboard
+                   </Link>
+                 </li>
               )}
-            </button>
+            </ul>
 
-            {/* Desktop auth buttons */}
-            <div className="hidden lg:flex lg:items-center lg:gap-3">
+            <div className="h-6 w-px bg-base-300 mx-2"></div>
+
+            <div className="flex items-center gap-4">
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-full hover:bg-base-200 text-base-content/70 transition-colors"
+                aria-label="Toggle Theme"
+              >
+                {theme === 'dark' ? <Sun size={20} className="text-yellow-400" /> : <Moon size={20} />}
+              </button>
+
               {user ? (
                 <div className="relative" ref={profileDropdownRef}>
-                  <button
+                  <button 
                     onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                    className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-[#300A91] dark:focus:ring-purple-400"
+                    className="flex items-center gap-3 pl-2 pr-1 py-1 rounded-full hover:bg-base-200 transition-colors border border-transparent hover:border-base-300"
                   >
-                    {user.photoURL ? (
-                      <img 
-                        src={user.photoURL} 
-                        alt={user.displayName || 'User'} 
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-[#300A91] dark:bg-purple-600 flex items-center justify-center">
-                        <User className="w-4 h-4 text-white" />
-                      </div>
-                    )}
-                    <ChevronDown className={`w-4 h-4 text-gray-600 dark:text-gray-300 transition-transform ${profileDropdownOpen ? 'rotate-180' : ''}`} />
+                    <div className="w-8 h-8 rounded-full bg-linear-to-tr from-primary to-secondary overflow-hidden flex items-center justify-center text-white text-xs font-bold">
+                      {user.photoURL ? (
+                        <img src={user.photoURL} alt="User" className="w-full h-full object-cover" />
+                      ) : (
+                        user.displayName?.charAt(0) || <User size={14} />
+                      )}
+                    </div>
+                    <ChevronDown size={16} className={`text-base-content/50 transition-transform ${profileDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
-                  
-                  {/* Profile Dropdown */}
+
                   {profileDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-lg z-50 border border-gray-200 dark:border-gray-700 overflow-hidden">
-                      <Link
-                        to="/myprofile"
+                    <div className="absolute right-0 mt-3 w-56 bg-base-100 rounded-xl shadow-xl border border-base-200 py-2 animate-fade-in overflow-hidden">
+                      <div className="px-4 py-2 border-b border-base-200 mb-1">
+                        <p className="text-sm font-semibold text-base-content">{user.displayName || 'User'}</p>
+                        <p className="text-xs text-base-content/60 truncate">{user.email}</p>
+                      </div>
+                      <Link 
+                        to="/dashboard" 
                         onClick={() => setProfileDropdownOpen(false)}
-                        className="flex items-center gap-2 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-base-content/70 hover:bg-base-200 hover:text-primary transition-colors"
                       >
-                        <User className="w-4 h-4" />
-                        <span>Profile</span>
+                        <LayoutDashboard size={16} />
+                        Dashboard
                       </Link>
-                      <button
-                        onClick={handleLogout}
-                        className="w-full text-left flex items-center gap-2 px-4 py-3 text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      <Link 
+                        to="/dashboard/myprofile" 
+                        onClick={() => setProfileDropdownOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-base-content/70 hover:bg-base-200 hover:text-primary transition-colors"
                       >
-                        <LogOut className="w-4 h-4" />
-                        <span>Logout</span>
+                        <User size={16} />
+                        My Profile
+                      </Link>
+                      <button 
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                      >
+                        <LogOut size={16} />
+                        Sign Out
                       </button>
                     </div>
                   )}
                 </div>
               ) : (
-                <>
-                  <Link to="/login" className="btn bg-[#300A91] dark:bg-purple-600 rounded-[50px] px-4 py-1 text-white hover:bg-[#3C0AA4] dark:hover:bg-purple-700 transition-colors">
-                    Log in
+                <div className="flex items-center gap-3">
+                  <Link to="/login" className="px-5 py-2.5 text-sm font-medium text-base-content/70 hover:text-primary transition-colors">
+                    Login
                   </Link>
-                  <Link to="/register" className="btn bg-[#300A91] dark:bg-purple-600 rounded-[50px] px-4 py-1 text-white hover:bg-[#3C0AA4] dark:hover:bg-purple-700 transition-colors">
-                    Registration
+                  <Link 
+                    to="/register" 
+                    className="px-5 py-2.5 text-sm font-medium text-white bg-primary rounded-full hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30 transition-all transform hover:-translate-y-0.5"
+                  >
+                    Get Started
                   </Link>
-                </>
-              )}
-            </div>
-
-            {/* Mobile menu button (visible on small screens) */}
-            <div className="lg:hidden" ref={menuRef}>
-              <button
-                aria-label={open ? "Close menu" : "Open menu"}
-                aria-expanded={open}
-                onClick={() => setOpen((s) => !s)}
-                className="p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#300A91] dark:focus:ring-purple-400"
-              >
-                <svg className="h-6 w-6 text-[#300A91] dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  {open ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                  ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-                  )}
-                </svg>
-              </button>
-
-              {/* Mobile dropdown */}
-              {open && (
-                <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 shadow-lg rounded-b-md z-50 border border-gray-200 dark:border-gray-700">
-                  <ul className="flex flex-col divide-y divide-gray-200 dark:divide-gray-700">
-                    {links.map((l) => (
-                      <li key={l.to}>
-                        <Link
-                          to={l.to}
-                          className="block px-4 py-3 text-[#300A91] dark:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                          onClick={() => setOpen(false)}
-                        >
-                          {l.label}
-                        </Link>
-                      </li>
-                    ))}
-
-                    {user ? (
-                      <>
-                        <li>
-                          <Link
-                            to="/myprofile"
-                            className="block px-4 py-3 text-[#300A91] dark:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
-                            onClick={() => setOpen(false)}
-                          >
-                            {user.photoURL ? (
-                              <img src={user.photoURL} alt={user.displayName || 'User'} className="w-6 h-6 rounded-full" />
-                            ) : (
-                              <User className="w-5 h-5" />
-                            )}
-                            My Profile
-                          </Link>
-                        </li>
-                        <li>
-                          <button
-                            onClick={() => {
-                              handleLogout();
-                            }}
-                            className="w-full text-left block px-4 py-3 text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
-                          >
-                            <LogOut className="w-5 h-5" />
-                            Logout
-                          </button>
-                        </li>
-                      </>
-                    ) : (
-                      <>
-                        <li>
-                          <Link
-                            to="/login"
-                            className="block px-4 py-3 text-[#300A91] dark:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                            onClick={() => setOpen(false)}
-                          >
-                            Log in
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            to="/register"
-                            className="block px-4 py-3 text-[#300A91] dark:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                            onClick={() => setOpen(false)}
-                          >
-                            Registration
-                          </Link>
-                        </li>
-                      </>
-                    )}
-                    <li>
-                      <button
-                        onClick={() => {
-                          toggleTheme();
-                          setOpen(false);
-                        }}
-                        className="w-full text-left block px-4 py-3 text-[#300A91] dark:text-purple-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-2"
-                      >
-                        {theme === 'dark' ? (
-                          <>
-                            <Sun className="h-5 w-5" />
-                            Light Mode
-                          </>
-                        ) : (
-                          <>
-                            <Moon className="h-5 w-5" />
-                            Dark Mode
-                          </>
-                        )}
-                      </button>
-                    </li>
-                  </ul>
                 </div>
               )}
             </div>
           </div>
+
+          {/* Mobile Toggle */}
+          <div className="lg:hidden flex items-center gap-4">
+            <button
+               onClick={toggleTheme}
+               className="p-2 rounded-full hover:bg-base-200 text-base-content/70 transition-colors"
+             >
+               {theme === 'dark' ? <Sun size={20} className="text-yellow-400" /> : <Moon size={20} />}
+             </button>
+            <button 
+              onClick={() => setOpen(!open)}
+              className="p-2 text-base-content/70 hover:bg-base-200 rounded-lg transition-colors"
+            >
+              {open ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
       </nav>
+
+      {/* Mobile Menu */}
+      {open && (
+        <div className="lg:hidden fixed inset-0 z-50 bg-base-100 pt-24 px-6 animate-fade-in shadow-xl border-t border-base-200" ref={menuRef}>
+           <div className="flex flex-col gap-4">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  onClick={() => setOpen(false)}
+                  className={`text-lg font-medium py-2 border-b border-base-200 ${
+                    location.pathname === link.to ? "text-primary" : "text-base-content/70"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+              {user && (
+                <Link
+                  to="/dashboard"
+                  onClick={() => setOpen(false)}
+                  className={`text-lg font-medium py-2 border-b border-base-200 ${
+                    location.pathname.includes('/dashboard') ? "text-primary" : "text-base-content/70"
+                  }`}
+                >
+                  Dashboard
+                </Link>
+              )}
+
+              <div className="mt-8 flex flex-col gap-3">
+                {user ? (
+                   <button 
+                     onClick={handleLogout}
+                     className="w-full py-3 rounded-xl bg-red-50 text-red-500 font-medium dark:bg-red-900/20"
+                   >
+                     Sign Out
+                   </button>
+                ) : (
+                  <>
+                    <Link to="/login" onClick={() => setOpen(false)} className="w-full py-3 rounded-xl border border-base-300 text-center font-medium text-base-content/70">
+                      Login
+                    </Link>
+                    <Link to="/register" onClick={() => setOpen(false)} className="w-full py-3 rounded-xl bg-primary text-white text-center font-medium shadow-lg shadow-primary/30">
+                      Get Started
+                    </Link>
+                  </>
+                )}
+              </div>
+           </div>
+        </div>
+      )}
     </header>
   );
 };

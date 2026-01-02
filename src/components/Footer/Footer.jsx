@@ -2,90 +2,67 @@ import React from "react";
 import FooterLogo from "../../assets/StudyMate.png";
 import { FaFacebook, FaYoutube, FaLinkedin } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <div className="mx-auto max-w-[1600px]">
-
-      <footer className="footer sm:footer-horizontal text-base-content p-10">
-        <aside>
-          <img
-            src={FooterLogo}
-            alt="Study Mate Logo"
-            className="h-[60px] w-auto mx-[-25px]"
-          />
-          <p>
-            Study Mate
-            <br />
-            Find Your Perfect Study Partner
+    <div className="bg-base-200 text-base-content border-t border-base-300">
+      <footer className="footer sm:footer-horizontal p-10 container mx-auto px-4 lg:px-8">
+        <aside className="max-w-xs">
+          <div className="flex items-center gap-2 mb-4">
+             {/* Use text if logo image is not suitable for dark/light variations without background handling */}
+             <span className="">
+              <img src={FooterLogo} alt="" className="h-[50px]"/>
+             </span>
+          </div>
+          <p className="opacity-80 leading-relaxed">
+            Connecting students worldwide. Find your perfect study partner and achieve your academic goals together.
           </p>
         </aside>
+        
         <nav>
-          <h6 className="footer-title">Services</h6>
-          <a className="link link-hover">Branding</a>
-          <a className="link link-hover">Design</a>
-          <a className="link link-hover">Marketing</a>
-          <a className="link link-hover">Advertisement</a>
+          <h6 className="footer-title opacity-100 text-primary uppercase tracking-wider">Quick Links</h6>
+          <Link to="/" className="link link-hover opacity-80 hover:opacity-100 hover:text-primary transition-colors">Home</Link>
+          <Link to="/findpartners" className="link link-hover opacity-80 hover:opacity-100 hover:text-primary transition-colors">Find Partners</Link>
+          <Link to="/about" className="link link-hover opacity-80 hover:opacity-100 hover:text-primary transition-colors">About Us</Link>
+          <Link to="/contact" className="link link-hover opacity-80 hover:opacity-100 hover:text-primary transition-colors">Contact Support</Link>
         </nav>
+        
         <nav>
-          <h6 className="footer-title">Company</h6>
-          <a className="link link-hover">About us</a>
-          <a className="link link-hover">Contact</a>
-          <a className="link link-hover">Jobs</a>
-          <a className="link link-hover">Press kit</a>
+          <h6 className="footer-title opacity-100 text-primary uppercase tracking-wider">Legal</h6>
+          <Link to="/privacy" className="link link-hover opacity-80 hover:opacity-100 hover:text-primary transition-colors">Privacy Policy</Link>
+          <Link to="/terms" className="link link-hover opacity-80 hover:opacity-100 hover:text-primary transition-colors">Terms of Use</Link>
+          <Link to="/cookies" className="link link-hover opacity-80 hover:opacity-100 hover:text-primary transition-colors">Cookie Policy</Link>
         </nav>
+        
         <nav>
-          <h6 className="footer-title">Legal</h6>
-          <a className="link link-hover">Terms of use</a>
-          <a className="link link-hover">Privacy policy</a>
-          <a className="link link-hover">Cookie policy</a>
-        </nav>
-        <nav>
-          <h3 className="footer-title">Social Link</h3>
-          <div className="flex gap-4 md:place-self-center md:justify-self-end">
-            <a
-              href="https://twitter.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="link link-hover"
-            >
-              <FaXTwitter size={24} />
+          <h6 className="footer-title opacity-100 text-primary uppercase tracking-wider">Connect</h6>
+          <div className="grid grid-flow-col gap-4">
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="p-2 bg-base-300 rounded-full hover:bg-primary hover:text-white transition-all transform hover:-translate-y-1">
+              <FaXTwitter size={20} />
             </a>
-            <a
-              href="https://youtube.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="link link-hover"
-            >
-              <FaYoutube size={24} />
+            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="p-2 bg-base-300 rounded-full hover:bg-red-600 hover:text-white transition-all transform hover:-translate-y-1">
+              <FaYoutube size={20} />
             </a>
-            <a
-              href="https://facebook.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="link link-hover"
-            >
-              <FaFacebook size={24} />
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="p-2 bg-base-300 rounded-full hover:bg-blue-600 hover:text-white transition-all transform hover:-translate-y-1">
+              <FaFacebook size={20} />
             </a>
-            <a
-              href="https://linkedin.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="link link-hover"
-            >
-              <FaLinkedin size={24} />
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="p-2 bg-base-300 rounded-full hover:bg-blue-700 hover:text-white transition-all transform hover:-translate-y-1">
+              <FaLinkedin size={20} />
             </a>
           </div>
         </nav>
       </footer>
 
-      <footer className="footer items-center justify-between border-t border-base-300 p-4 px-10 text-base-content">
-        <aside className="items-center">
-          <p>© {new Date().getFullYear()} Study Mate - All rights reserved.</p>
-        </aside>
-      </footer>
+      <div className="bg-base-300/50 py-4">
+        <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between text-sm opacity-70">
+           <p>© {new Date().getFullYear()} StudyMate. All rights reserved.</p>
+           <p>Designed with <span className="text-red-500">❤</span> for Students.</p>
+        </div>
+      </div>
     </div>
   );
 };
 
 export default Footer;
+
