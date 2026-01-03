@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { loadingManager } from '../utils/loadingManager';
 
 // Base URLs according to documentation
 // Local: http://localhost:5000
@@ -27,15 +28,27 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
+  loadingManager.startLoading(); // Start global loading
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-  // Debug: Log full request URL
-  const fullUrl = config.baseURL + config.url;
-  console.log('🌐 API Request:', config.method?.toUpperCase(), fullUrl);
   return config;
-}, (err) => Promise.reject(err));
+}, (err) => {
+  loadingManager.stopLoading();
+  return Promise.reject(err);
+});
+
+api.interceptors.response.use(
+  (response) => {
+    loadingManager.stopLoading(); // Stop global loading on success
+    return response;
+  },
+  (error) => {
+    loadingManager.stopLoading(); // Stop global loading on error
+    return Promise.reject(error);
+  }
+);
 
 
 export const registerUser = async (userData) => {

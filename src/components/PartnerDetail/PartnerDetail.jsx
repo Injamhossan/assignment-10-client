@@ -4,6 +4,8 @@ import { getPartnerById } from '../../services/api';
 import PageLoader from '../../components/Spinner/PageLoader';
 import { ArrowLeft, Star, MapPin, Clock, Users, Award, Wifi, MessageSquare, XCircle, CheckCircle } from 'lucide-react'; // <-- Notun Icon
 import { toast } from 'react-toastify';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 import { useAuth } from '../../context/AuthContext'; // <-- AuthContext Import
 
 // Helper function to get initials from name
@@ -168,12 +170,18 @@ const PartnerDetail = () => {
               {/* Avatar */}
               <div className="relative w-32 h-32 rounded-full flex items-center justify-center bg-gradient-to-br from-primary to-secondary text-white mx-auto mb-6 shadow-2xl shadow-primary/30">
                 {partner.image ? (
-                  <img src={partner.image} alt={partner.name} className="w-full h-full rounded-full object-cover border-4 border-base-100" />
+                  <LazyLoadImage 
+                    src={partner.image} 
+                    alt={partner.name} 
+                    effect="blur"
+                    className="w-full h-full rounded-full object-cover border-4 border-base-100" 
+                    wrapperClassName="w-full h-full rounded-full"
+                  />
                 ) : (
                   <span className="text-4xl font-display font-bold">{getInitials(partner.name)}</span>
                 )}
                 {isOnline && (
-                  <span className="absolute bottom-2 right-2 w-5 h-5 bg-green-500 border-4 border-base-100 rounded-full"></span>
+                  <span className="absolute bottom-2 right-2 w-5 h-5 bg-green-500 border-4 border-base-100 rounded-full z-10"></span>
                 )}
               </div>
               

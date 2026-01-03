@@ -29,16 +29,21 @@ const StatsSection = () => (
   </section>
 );
 
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
+
 const AboutSection = () => (
   <section className="py-20 lg:py-28 overflow-hidden">
     <div className="container mx-auto px-4 lg:px-8">
       <div className="flex flex-col md:flex-row items-center gap-12 lg:gap-20">
         <div className="w-full md:w-1/2 relative">
           <div className="absolute inset-0 bg-gradient-to-tr from-primary to-accent rounded-3xl opacity-20 transform rotate-3 scale-105"></div>
-          <img 
+          <LazyLoadImage 
             src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1471&q=80" 
             alt="Students studying" 
+            effect="blur"
             className="relative rounded-3xl shadow-2xl w-full object-cover aspect-[4/3] transform transition-transform hover:scale-[1.01]"
+            wrapperClassName="w-full h-auto"
           />
         </div>
         <div className="w-full md:w-1/2 space-y-6">

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Mail, Save, Edit2, X, Trash2 } from 'lucide-react'; 
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css'; 
 import PageLoader from '../../components/Spinner/PageLoader';
 import { useAuth } from '../../context/AuthContext';
 import { getMyProfile } from '../../services/api';
@@ -188,10 +190,12 @@ const MyProfile = () => {
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6 pb-6 border-b border-base-200">
               <div className="relative">
                 {formData.photoURL ? (
-                  <img
+                  <LazyLoadImage
                     src={formData.photoURL}
                     alt="Profile"
+                    effect="blur"
                     className="w-32 h-32 rounded-full object-cover border-4 border-primary/20"
+                    wrapperClassName="w-32 h-32 rounded-full"
                   />
                 ) : (
                   <div className="w-32 h-32 rounded-full bg-primary/10 flex items-center justify-center border-4 border-primary/20">

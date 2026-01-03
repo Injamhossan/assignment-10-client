@@ -2,6 +2,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Star, MapPin, Clock } from "lucide-react";
 
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
+
 // Helper function to get initials from name
 const getInitials = (name) => {
   if (!name) return "S";
@@ -35,13 +38,15 @@ const PartnerCard = ({ partner }) => {
           <div className="relative">
             {/* Avatar */}
             <div
-              className={`w-14 h-14 rounded-full flex items-center justify-center bg-gradient-to-br from-primary to-secondary text-white shadow-lg shadow-primary/20`}
+              className={`w-14 h-14 rounded-full flex items-center justify-center bg-gradient-to-br from-primary to-secondary text-white shadow-lg shadow-primary/20 overflow-hidden`}
             >
               {image ? (
-                <img
+                <LazyLoadImage
                   src={image}
                   alt={name}
+                  effect="blur"
                   className="w-full h-full rounded-full object-cover border-2 border-base-100"
+                  wrapperClassName="w-full h-full flex items-center justify-center"
                 />
               ) : (
                 <span className="text-xl font-bold font-display">{getInitials(name)}</span>

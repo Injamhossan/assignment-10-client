@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import { 
   LayoutDashboard, 
   User, 
@@ -16,6 +17,7 @@ const DashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { user, logout } = useAuth(); // Use real auth context
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = async () => {
     if (logout) await logout();
@@ -36,7 +38,7 @@ const DashboardLayout = () => {
       {/* Sidebar for Desktop */}
       <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-base-100 border-r border-base-200 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex items-center justify-between h-16 px-6 border-b border-base-200">
-          <Link to="/" className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
+          <Link to="/" className="text-2xl font-bold bg-clip-text text-transparent bg-linear-to-r from-primary to-accent">
             StudyMate
           </Link>
           <button onClick={toggleSidebar} className="lg:hidden p-2 rounded-md hover:bg-base-200 text-base-content/70">
@@ -104,8 +106,18 @@ const DashboardLayout = () => {
 
         {/* Page Content */}
         <main className="flex-1 p-6 lg:p-8 overflow-y-auto">
-          <div className="max-w-7xl mx-auto animate-fade-in">
-            <Outlet />
+          <div className="max-w-7xl mx-auto">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Outlet />
+              </motion.div>
+            </AnimatePresence>
           </div>
         </main>
       </div>
