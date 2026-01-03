@@ -57,9 +57,9 @@ const Navbar = () => {
   // Main Navigation Links
   const navLinks = [
     { to: "/", label: "Home" },
-    { to: "/findpartners", label: "Find Partners" },
-    { to: "/about", label: "About Us" },
-    { to: "/contact", label: "Contact" },
+    { to: "findpartners", label: "Find Partners" },
+    { to: "about", label: "About Us" },
+    { to: "contact", label: "Contact" },
   ];
   return (
     <header 
@@ -155,7 +155,7 @@ const Navbar = () => {
                         Dashboard
                       </Link>
                       <Link 
-                        to="/dashboard/myprofile" 
+                        to="dashboard/myprofile" 
                         onClick={() => setProfileDropdownOpen(false)}
                         className="flex items-center gap-3 px-4 py-2.5 text-sm text-base-content/70 hover:bg-base-200 hover:text-primary transition-colors"
                       >
@@ -244,10 +244,10 @@ const Navbar = () => {
                    </button>
                 ) : (
                   <>
-                    <Link to="/login" onClick={() => setOpen(false)} className="w-full py-3 rounded-xl border border-base-300 text-center font-medium text-base-content/70">
+                    <Link to="login" onClick={() => setOpen(false)} className="w-full py-3 rounded-xl border border-base-300 text-center font-medium text-base-content/70">
                       Login
                     </Link>
-                    <Link to="/register" onClick={() => setOpen(false)} className="w-full py-3 rounded-xl bg-primary text-white text-center font-medium shadow-lg shadow-primary/30">
+                    <Link to="register" onClick={() => setOpen(false)} className="w-full py-3 rounded-xl bg-primary text-white text-center font-medium shadow-lg shadow-primary/30">
                       Get Started
                     </Link>
                   </>
