@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getPartnerById } from '../../services/api';
 import PageLoader from '../../components/Spinner/PageLoader';
 import { ArrowLeft, Star, MapPin, Clock, Users, Award, Wifi, MessageSquare, XCircle, CheckCircle } from 'lucide-react'; // <-- Notun Icon
-import { toast } from 'react-toastify';
+import { toast } from '../../utils/toastManager';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import { useAuth } from '../../context/AuthContext'; // <-- AuthContext Import

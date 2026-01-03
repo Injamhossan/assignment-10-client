@@ -6,7 +6,7 @@ import 'react-lazy-load-image-component/src/effects/blur.css';
 import PageLoader from '../../components/Spinner/PageLoader';
 import { useAuth } from '../../context/AuthContext';
 import { getMyProfile } from '../../services/api';
-import { toast } from 'react-toastify'; 
+import { toast } from '../../utils/toastManager'; 
 
 const MyProfile = () => {
   const [loading, setLoading] = useState(true);

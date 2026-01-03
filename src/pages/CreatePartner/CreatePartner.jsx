@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { createPartner, updatePartnerProfile } from '../../services/api'; 
 import PageLoader from '../../components/Spinner/PageLoader';
-import { toast } from 'react-toastify';
+import { toast } from '../../utils/toastManager';
 import { User, Mail, Book, BarChart, Wifi, MapPin, Clock, Info, Image as ImageIcon } from 'lucide-react';
 
 const CreatePartner = () => {

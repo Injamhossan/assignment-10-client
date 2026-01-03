@@ -111,3 +111,31 @@ body {
 .glass-morphism {
   @apply bg-white/70 dark:bg-black/40 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg;
 }
+
+/* React Toastify Overrides */
+:root {
+  --toastify-color-light: var(--color-base-100);
+  --toastify-color-dark: var(--color-base-200);
+  --toastify-color-info: var(--color-primary);
+  --toastify-color-success: #22c55e;
+  --toastify-color-warning: #eab308;
+  --toastify-color-error: #ef4444;
+  --toastify-text-color-light: var(--color-base-content);
+  --toastify-text-color-dark: var(--color-base-content);
+  --toastify-color-progress-light: var(--gradient-primary);
+  --toastify-color-progress-dark: var(--gradient-primary);
+  --toastify-font-family: var(--font-display);
+}
+
+.Toastify__progress-bar {
+  background: var(--gradient-primary) !important;
+}
+
+.Toastify__close-button {
+  color: var(--color-base-content) !important;
+  opacity: 0.7;
+}
+
+.Toastify__close-button:hover {
+  opacity: 1;
+}

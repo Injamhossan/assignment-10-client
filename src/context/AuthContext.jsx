@@ -11,7 +11,7 @@ import {
   deleteUser
 } from 'firebase/auth';
 import { auth } from '../firebase/firebase.config';
-import { toast } from 'react-toastify';
+import { toast } from '../utils/toastManager';
 import {
   registerUser,
   loginUser,

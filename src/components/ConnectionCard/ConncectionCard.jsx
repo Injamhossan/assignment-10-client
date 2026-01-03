@@ -1,7 +1,7 @@
 // src/components/ConnectionCard/ConncectionCard.jsx
 
 import React from 'react';
-import { toast } from 'react-toastify'; // Make sure this import is here
+import { toast } from '../../utils/toastManager'; // Make sure this import is here
 import { Edit, Trash2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 

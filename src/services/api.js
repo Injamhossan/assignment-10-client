@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { toast } from 'react-toastify';
+import { toast } from '../utils/toastManager';
 import { loadingManager } from '../utils/loadingManager';
 
 // Base URLs according to documentation
